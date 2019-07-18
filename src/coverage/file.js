@@ -79,7 +79,7 @@ class File extends React.Component {
             <div className="coverage-header">
                <div style={{display: 'inline-block', width: '100%'}}>
                  <div style={{float: 'left', textAlign: 'left'}}>
-                     <h3> <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}`}>{name}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}/${encodeURIComponent(file).replace(/\./g, '%2E')}`}>{file}</a> </h3>
+                     <h3> <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}`}>{name}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}/${encodeURIComponent(file).replace(/\./g, '%2E')}`}>{fileSource.file}</a> <span style={{color: color}}>{ percentage }%</span></h3>
                      <p>
                        <a className="coverage-commit-message" href={commitUrl} target="_blank" rel="noopener noreferrer"> {message} </a>
                        on branch
@@ -89,8 +89,6 @@ class File extends React.Component {
                        <b> {author_name} </b>
                      </p>
                  </div>
-
-                 <h3 style={{float: 'right', color: color}}>{ percentage }%</h3>
                </div>
                <CoverageChart width={window.innerWidth - 200} data={parseCoverage(project.history)} height={100} />
             </div>

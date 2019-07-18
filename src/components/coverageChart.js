@@ -9,14 +9,14 @@ class CoverageChart extends React.Component {
 
     const opt = {
         data,
-        colors: ['#9a8585', '#a7daff', '#f7ca97'],
-        labels: ['Lines', 'Branches', 'Functions'],
+        colors: ['#eeeeee',   '#00ff8f'],
+        labels: ['All lines', 'Covered'],
         width,
         height,
         lines: true,
         area: true,
-        dots: true,
-        hideLabels: false,
+        dots: false,
+        hideLabels: true,
         grid: false
     };
 

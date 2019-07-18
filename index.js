@@ -29,7 +29,7 @@ const asyncMiddleware = (fn) => {
 };
 const app = express();
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '100MB'}));
 app.use(compression());
 app.use(serveStatic(path.resolve(__dirname, 'dist'), {
   maxAge: '1d',

@@ -114,13 +114,15 @@ class List extends React.Component {
       });
 
       return <div>
-        <div style={{ width: "85%", margin: "0 auto", marginBottom: "50px" }}>
-          <Select
-            matchPos="any"
-            value={selected}
-            options={options}
-            onChange={this.onSelect.bind(this)}
-          />
+        <div style={{ margin: "0 50px 50px" }}>
+          <div style={{maxWidth: '1080px', margin: '0 auto'}}>
+            <Select
+              matchPos="any"
+              value={selected}
+              options={options}
+              onChange={this.onSelect.bind(this)}
+            />
+          </div>
         </div>
         { title ?
           <div className="text-center">
@@ -135,12 +137,14 @@ class List extends React.Component {
             return <Item key={`${repo}`} repo={repo} />;
           }) }
         </div>
-        <div style={{ position: "relative", width: "80%", height: "50px", textAlign: "center", margin: "0 auto", marginBottom: "50px", lineHeight: "100px" }}>
-          <button className="btn" style={{ left: 0, position: "absolute", top: "25px" }} onClick={this.previousPage.bind(this)}> Previous </button>
+        <div style={{margin: "0 50px"}}>
+          <div style={{ position: "relative", maxWidth: "1080px", height: "50px", textAlign: "center", margin: "0 auto", marginBottom: "50px", lineHeight: "100px" }}>
+            <button className="btn" style={{ left: 0, position: "absolute", top: "25px" }} onClick={this.previousPage.bind(this)}> Previous </button>
 
-          <div style={{ display: "inline-block" }}> {page}/{repos.length} </div>
+            <div style={{ display: "inline-block" }}> {page}/{repos.length} </div>
 
-          <button className="btn" style={{ right: 0, position: "absolute", top: "25px" }} onClick={this.nextPage.bind(this)}> Next </button>
+            <button className="btn" style={{ right: 0, position: "absolute", top: "25px" }} onClick={this.nextPage.bind(this)}> Next </button>
+          </div>
         </div>
       </div>;
     } else {

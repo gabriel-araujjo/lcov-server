@@ -1,7 +1,76 @@
-.table-fileView td {
-  border: 0;
+.file-view {
+  font-family: monospace;
+  font-size: 13px;
+  position: relative;
+  text-align: left;
+  max-width: 1080px;
+  margin: 0 auto;
 }
 
-.table-fileView tr, .table-fileView tr > *, .table-fileView td span {
+.file-view > .cov-layer > .times {
+  display: block;
+  padding-right: 5pt;
+  padding-left: 40pt;
   font-family: monospace;
+}
+
+.file-view > .cov-layer > .times.uncovered {
+  background-color: #fd8be15e;
+  color: #e42ea5;
+}
+
+.file-view > .cov-layer > .times.covered {
+  background-color: #bef5e26b;
+  color: #58ae8d;
+}
+
+.file-view > .src-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: grid;
+  grid-template-columns: 40pt auto;
+  grid-column-gap: 40pt;
+}
+
+.file-view > .src-layer > .source-code > pre {
+  background: none;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.file-view > .src-layer > .line-numbers {
+  padding-right: 10pt;
+  background: rgba(249, 225, 178, 0.64);
+}
+
+.file-view > .src-layer > .line-numbers > .line-number {
+  display: block;
+  text-align: right;
+  color: #888888;
+  font-family: monospace;
+}
+
+.file-view .line-number, .file-view .source-code, .cov-layer .times {
+  line-height: 19px;
+  padding: 0;
+  margin: 0;
+}
+
+.file-view .source-code {
+  overflow-x: auto;
+}
+
+.file-view .source-code * {
+  font-family: inherit;
+}
+
+.cov-layer .times::before {
+  content: 'A';
+  color: transparent;
+}
+
+.table-fileView .line-number {
+  text-align: right;
 }

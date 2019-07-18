@@ -9,6 +9,9 @@ import Error from '../components/error';
 import Loading from '../components/loading';
 
 import { parseCoverage } from '../lib/util';
+import './coverage.css';
+
+const coverageGradient = ['#58B265', '#8AC564', '#D1D870', '#D1D870', '#D1D870', '#DFC780', '#E6B490', '#ECA9A1', '#F1B2C0']
 
 class Coverage extends React.Component {
   constructor(props) {
@@ -76,11 +79,14 @@ class Coverage extends React.Component {
     const totalCoverage = parseInt((totalHit / totalFound) * 100);
     const fileName = encodeURIComponent(file.title).replace(/\./g, '%2E');
 
+    let colorIndex = Math.floor((totalHit / totalFound) * coverageGradient.length);
+    if (!colorIndex) colorIndex = 1;
+    const badgeColor = coverageGradient[coverageGradient.length - colorIndex];
     return {
-      "Coverage": `${totalCoverage}%`,
       "File": <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}/${fileName}`}>
-          { file.title }
+          { file.file }
       </a>,
+      "Coverage": <div><span className='badge-color' style={{backgroundColor: badgeColor}}></span>{totalCoverage}%</div>,
       "Lines": `${lines.hit} / ${lines.found}`,
       "Branches": `${branches.hit} / ${branches.found}`,
       "Functions": `${functions.hit} / ${functions.found}`
@@ -115,7 +121,7 @@ class Coverage extends React.Component {
           <div style={{display: 'inline-block', width: '100%'}}>
             <div style={{float: 'left', textAlign: 'left'}}>
                 <h3>
-                  <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}`}>{name}</a>
+                  <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}`}>{name}</a> <img src={`/badge/${source.replace(/\./g, '%2E')}/${owner}/${name}.svg`} style={{verticalAlign: 'middle'}} />
                 </h3>
                 <p>
                   <a className="coverage-commit-message" href={commitUrl} target="_blank" rel="noopener noreferrer"> {message} </a>
@@ -126,9 +132,8 @@ class Coverage extends React.Component {
                   <b> {author_name} </b>
                 </p>
             </div>
-            <h3 style={{float: 'right'}}> <img src={`/badge/${source.replace(/\./g, '%2E')}/${owner}/${name}.svg`} /> </h3>
           </div>
-          <div>
+          <div style={{margin: '0 auto 30px'}}>
             <Select
               matchPos="any"
               value={selectedBranch}
@@ -136,10 +141,9 @@ class Coverage extends React.Component {
               onChange={this.onChangeBranch.bind(this)}
             />
           </div>
-          <CoverageChart width={window.innerWidth - 200} data={data} height={100} />
-          <hr/>
+          <CoverageChart width={window.innerWidth > 1080 ? 1080 : window.innerWidth} data={data} height={100} />
           <h4> Source Files ({ history[0].source_files.length })</h4>
-          <Table data={history[0].source_files.map(this.reduceSourceFiles.bind(this))} chunk={5}/>
+          <Table data={history[0].source_files.map(this.reduceSourceFiles.bind(this))} chunk={100}/>
           <h4> Recent Builds ({ history.length })</h4>
           <Table data={history.map(this.reduceBuilds)} chunk={9}/>
          </div>

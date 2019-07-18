@@ -12,7 +12,7 @@ class Layout extends React.Component {
           <div className="container">
             <div className="navbar-title">
               <a className="text-black" href="/">
-                <span className="text-black">lcov-server</span>
+                <span className="text-black">Coverage server</span>
               </a>
             </div>
             <div className="nav">

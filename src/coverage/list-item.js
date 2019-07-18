@@ -72,7 +72,7 @@ class ListItem extends React.Component {
           <div className="coverage-header">
              <div style={{display: 'inline-block', width: '100%'}}>
                <div style={{float: 'left', textAlign: 'left'}}>
-                   <h3> <a href={`/coverage/${resource.replace(/\./g, '%2E').replace(`.${protocol}`, '')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${resource.replace(/\./g, '%2E').replace(`.${protocol}`, '')}/${owner}/${name}`}>{name}</a> </h3>
+                   <h3> <a href={`/coverage/${resource.replace(/\./g, '%2E').replace(`.${protocol}`, '')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${resource.replace(/\./g, '%2E').replace(`.${protocol}`, '')}/${owner}/${name}`}>{name}</a> <img style={{verticalAlign: 'middle'}} src={`/badge/${resource.replace(/\./g, '%2E')}/${owner}/${name}.svg`} /> </h3>
                    <p>
                      <a className="coverage-commit-message" href={commitUrl} target="_blank" rel="noopener noreferrer"> {message} </a>
                      on branch
@@ -82,8 +82,6 @@ class ListItem extends React.Component {
                      <b> {author_name} </b>
                    </p>
                </div>
-
-               <h3 style={{float: 'right' }}> <img src={`/badge/${resource.replace(/\./g, '%2E')}/${owner}/${name}.svg`} /> </h3>
              </div>
              <CoverageChart width={window.innerWidth - 200} height={100} data={data} />
           </div>

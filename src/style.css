@@ -55,13 +55,17 @@ ul {
   margin-left: 50px;
   margin-right: 50px;
 }
-.coverage-header {}
+.coverage-header {
+  max-width: 1080px;
+  margin: 0 auto;
+}
 .coverage-commit-message {
   text-overflow: ellipsis;
 	width: 200px;
 	white-space: nowrap;
 	overflow: hidden;
   display: inline-block;
+  vertical-align: bottom;
 }
 
 ul.dropdown-menu.rbt-menu.dropdown-menu-justify {

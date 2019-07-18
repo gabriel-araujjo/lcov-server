@@ -31,7 +31,7 @@ class Curve extends React.Component {
 
 		return (
 			<g style={ style }>
-				{ area === true ? <path d={ areaPath } fill={ color } fillOpacity=".05" /> : null }
+				{ area === true ? <path d={ areaPath } fill={ color } /> : null }
 				<path d={ path } fill="none" stroke={ color } strokeWidth={ stroke } />
 			</g>
 		);

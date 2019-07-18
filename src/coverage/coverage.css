@@ -1,0 +1,9 @@
+.badge-color {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+	border-radius: 10px;
+	background-color: rgb(211, 211, 211);
+	vertical-align: bottom;
+	margin-right: 5pt;
+}

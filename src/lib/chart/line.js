@@ -107,12 +107,12 @@ class LineChart extends React.Component {
 
 		let svgOpts = {
 			xmlns: 'http://www.w3.org/2000/svg',
-			width: (width + padding * 2) + 'px',
-			height: (height + 2 * padding) + 'px',
+			width: '100%',
+			height: 'auto',
 			viewBox: '0 0 ' + (width + 2 * padding) + ' ' + (height + 2 * padding)
 		};
 
-		return (<span className='LineChart' style={{ width: width + 2 * padding }}>
+		return (<span className='LineChart'>
 			<svg {...svgOpts}>
 				{ grid ?
 					<g>
@@ -181,7 +181,7 @@ LineChart.defaultProps = {
   stroke: 1,
   radius: 3,
   grid: true,
-  padding: 50,
+  padding: 0,
   heightRatio: 1,
   maxValue: 0,
   hideLabels: false,

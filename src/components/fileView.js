@@ -4,30 +4,34 @@ import 'highlight.js/styles/default.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 import Highlight from 'highlight.js';
+import Parser from 'html-react-parser';
 
 class FileView extends React.Component {
   render() {
     const { source, lineMap, extension } = this.props;
 
-    return (<div style={{ paddingTop: '25px', paddingBottom: '25px', backgroundColor: 'rgba(246, 244, 244, 0.5)', width: window.innerWidth - 200, margin: '0 auto', fontSize: "16px" }}>
-      <table className="table-fileView table responsive">
-        <tbody>
-          {Highlight.highlight(extension, source).value.split('\n').map((l, i) => {
-            // retain the amount of space that will be stripped
-            const line = l.split('').reverse();
-            const color = lineMap[i] > 0 ? '#00c661' : '#c75151';
-            let space = '';
-            while (line.pop() == ' ') {
-              space += '\u00a0';
-            }
-            return (<tr key={i}>
-              <td style={{ padding: "2px", paddingRight: "5px", borderBottom: 0, textAlign: "center" }}>{i}</td>
-              <td style={{ padding: "2px", borderBottom: 0 }} dangerouslySetInnerHTML={{ __html: space + l }}></td>
-              <td style={{ padding: "2px", borderBottom: 0, color: color }}>{!isNaN(lineMap[i]) ? `${lineMap[i]}x` : ''}</td>
-            </tr>);
+    return (<div className='file-view' style={{ paddingTop: '0', paddingBottom: '0', backgroundColor: 'rgba(255, 245, 211, 0.5)', fontSize: "13px" }}>
+      <div className="cov-layer">
+        {source.split('\n').map((l, i) => {
+          const covClass = !isNaN(lineMap[i]) ? lineMap[i] == 0 ? 'uncovered' : 'covered' : '';
+          const count = !isNaN(lineMap[i]) ? `${lineMap[i]}×` : '';
+          return (<span className={`times ${covClass}`}>{count}</span>)
+        }, [])}
+      </div>
+      <div className="src-layer">
+        <div className="line-numbers">
+          {source.split('\n').map((l, i) => {
+            return (<a id={`L${i}`} className="line-number" href={`#L${i}`}>{i}</a>)
           }, [])}
-        </tbody>
-      </table>
+        </div>
+        <div className="source-code">
+          <pre style={{margin: '0', padding: '0'}}>
+            <code style={{margin: '0', padding: '0', fontFamily: 'monospace'}}>
+            {Parser(Highlight.highlight(extension, source).value)}
+            </code>
+          </pre>
+        </div>
+      </div>
     </div>);
   }
 }
