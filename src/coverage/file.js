@@ -61,15 +61,13 @@ class File extends React.Component {
               return f.title === file;
           })[0];
 
-          const { lines={ found: 0, hit: 0 }, branches={ found: 0, hit: 0 }, functions={ found: 0, hit: 0 } } = fileSource;
+          const { lines={ found: 0, hit: 0 } } = fileSource;
 
           lines.details.forEach((l) => {
               lineMap[l.line - 1] = l.hit;
           });
           const linePercentage = parseInt(((lines.hit / lines.found) || 1) * 100);
-          const branchPercentage = parseInt(((branches.hit / branches.found) || 1) * 100);
-          const functionPercentage = parseInt(((functions.hit / functions.found) || 1) * 100);
-          const percentage = parseInt((linePercentage + branchPercentage + functionPercentage) / 3);
+          const percentage = parseInt(linePercentage);
           const color = linePercentage >= 90 ? '#008a44' : linePercentage <= 89 && linePercentage >= 80 ? '#cfaf2a' : '#c75151';
 
           const { message, commit, branch, author_name, author_date } = history.git;

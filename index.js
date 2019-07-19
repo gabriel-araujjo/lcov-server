@@ -116,9 +116,9 @@ app.get('/badge/:service/:owner/:repo.svg', asyncMiddleware(async (req, res) => 
     let found = 0;
     let hit = 0;
     source_files.forEach((file) => {
-      const { lines={hit: 0, found: 0}, branches={hit: 0, found: 0}, functions={hit: 0, found: 0} } = file;
-      found += lines.found + branches.found + functions.found;
-      hit += lines.hit + branches.hit + functions.hit;
+      const { lines={hit: 0, found: 0} } = file;
+      found += lines.found;
+      hit += lines.hit;
     });
     const percentage = parseInt((hit / found) * 100);
     const color = percentage >= 85 ? '#3DB712' : percentage <= 85 && percentage >= 70 ? '#caa300' : '#cc5338';

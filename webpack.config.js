@@ -6,7 +6,7 @@ const MinifyPlugin = require('babel-minify-webpack-plugin');
 var config = {
     entry: {
       app: ['babel-polyfill', 'whatwg-fetch', './src/app.js'],
-      vendor: ['react', 'react-select', 'react-dom', 'react-router-dom', 'prop-types', 'highlight.js', 'whatwg-fetch', 'babel-polyfill'],
+      vendor: ['react', 'react-select', 'react-dom', 'react-router-dom', 'prop-types', 'highlight.js', 'whatwg-fetch'],
     },
     output: {
       path: path.resolve(__dirname, 'dist'),

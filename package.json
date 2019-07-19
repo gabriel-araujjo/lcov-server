@@ -18,6 +18,7 @@
     "lint": "eslint .",
     "test": "tape test/lib/**/*.js test/index.js",
     "coverage": "tap test/lib/**.js --coverage --coverage-report=lcov",
+    "prepublish": "npm run build",
     "build": "npm run build:client && npm run build:server",
     "build:server": "babel index.js --out-dir ./distributed && babel lib --out-dir ./distributed/lib && babel bin --out-dir ./distributed/bin && cp package.json ./distributed/ && cp -r dist ./distributed",
     "build:client": "NODE_ENV=production webpack --progress",
@@ -26,8 +27,7 @@
     "pack": "pkg bin/lcov-server.js -c package.json -o packed/lcov-server",
     "generate-docs": "tryitout && jsdoc -c jsdoc.json",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook --output-dir ./docs/storybook",
-    "postinstall": "npm run build"
+    "build-storybook": "build-storybook --output-dir ./docs/storybook"
   },
   "author": "Gabriel J. Csapo <gabecsapo@gmail.com>",
   "bin": {

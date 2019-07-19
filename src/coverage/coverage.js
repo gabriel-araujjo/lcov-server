@@ -49,19 +49,14 @@ class Coverage extends React.Component {
   }
   reduceBuilds(build) {
     const { git, run_at, source_files } = build;
-    let totalCoverage = source_files.map((f) => {
-      const { lines={ found: 0, hit: 0 }, branches={ found: 0, hit: 0 }, functions={ found: 0, hit: 0 } } = f;
-
-      const totalFound = lines.found + branches.found + functions.found;
-      const totalHit = lines.hit + branches.hit + functions.hit;
-      const totalCoverage = parseInt((totalHit / totalFound) * 100);
-      return totalCoverage;
-    }, []).reduce((p, c, _ ,a) => p + c / a.length, 0);
+    let totalCoverage = source_files.map(({ lines={ found: 0, hit: 0 } }) => {
+      return !lines.found ? 1 : lines.hit / lines.found;
+    }, []).reduce((p, c) => p + c, 0) / source_files.length * 100;
 
     return {
       "Sha": `${git.commit}`.substr(0, 6),
       "Branch": git.git_branch || git.branch || <span style={{ color: "#9a9a9a" }}> unknown </span>, // backwards compatible
-      "Coverage": `${totalCoverage}%`,
+      "Coverage": `${totalCoverage.toFixed(2)}%`,
       "Commit": git.message,
       "Committer": git.committer_name,
       "Commit Time": Moment(git.committer_date * 1000).fromNow(),
@@ -74,19 +69,17 @@ class Coverage extends React.Component {
 
     const { lines={ found: 0, hit: 0 }, branches={ found: 0, hit: 0 }, functions={ found: 0, hit: 0 } } = file;
 
-    const totalFound = lines.found + branches.found + functions.found;
-    const totalHit = lines.hit + branches.hit + functions.hit;
-    const totalCoverage = parseInt((totalHit / totalFound) * 100);
+    const lineCoverage = parseInt((lines.hit / lines.found) * 100);
     const fileName = encodeURIComponent(file.title).replace(/\./g, '%2E');
 
-    let colorIndex = Math.floor((totalHit / totalFound) * coverageGradient.length);
+    let colorIndex = Math.floor((lines.hit / lines.found) * coverageGradient.length);
     if (!colorIndex) colorIndex = 1;
     const badgeColor = coverageGradient[coverageGradient.length - colorIndex];
     return {
       "File": <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}/${fileName}`}>
           { file.file }
       </a>,
-      "Coverage": <div><span className='badge-color' style={{backgroundColor: badgeColor}}></span>{totalCoverage}%</div>,
+      "Coverage": <div><span className='badge-color' style={{backgroundColor: badgeColor}}></span>{lineCoverage}%</div>,
       "Lines": `${lines.hit} / ${lines.found}`,
       "Branches": `${branches.hit} / ${branches.found}`,
       "Functions": `${functions.hit} / ${functions.found}`
