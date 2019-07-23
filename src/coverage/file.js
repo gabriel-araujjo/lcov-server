@@ -61,11 +61,16 @@ class File extends React.Component {
               return f.title === file;
           })[0];
 
-          const { lines={ found: 0, hit: 0 } } = fileSource;
+          const { lines={ found: 0, hit: 0 }, branches } = fileSource;
 
-          lines.details.forEach((l) => {
-              lineMap[l.line - 1] = l.hit;
+          lines.details.forEach(({ line, hit }) => {
+              lineMap[line - 1] = { hit, branchesFound: 0, branchesHit: 0 }
           });
+          branches.details.forEach(({ line, taken }) => {
+              const lineDetail = lineMap[line - 1] = lineMap[line - 1] || {hit: 0, branchesFound: 0, branchesHit: 0};
+              lineDetail.branchesFound++;
+              if (taken) lineDetail.branchesHit++;
+          })
           const linePercentage = parseInt(((lines.hit / lines.found) || 1) * 100);
           const percentage = parseInt(linePercentage);
           const color = linePercentage >= 90 ? '#008a44' : linePercentage <= 89 && linePercentage >= 80 ? '#cfaf2a' : '#c75151';

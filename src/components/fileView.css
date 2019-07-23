@@ -19,6 +19,11 @@
   color: #e42ea5;
 }
 
+.file-view > .cov-layer > .times.partial {
+  background-color: #fff1706b;
+  color: #b9bf37;
+}
+
 .file-view > .cov-layer > .times.covered {
   background-color: #bef5e26b;
   color: #58ae8d;

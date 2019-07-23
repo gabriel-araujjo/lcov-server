@@ -1,28 +1,37 @@
 import './fileView.css';
-import 'highlight.js/styles/default.css';
+import 'highlight.js/styles/solarized-light.css';
 
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { func } from 'prop-types';
 import Highlight from 'highlight.js';
 import Parser from 'html-react-parser';
+
+function coverageStatus(line) {
+  if (typeof line === 'undefined' || isNaN(line.hit)) return '';
+  if (!line.hit) return 'uncovered';
+  if (line.branchesFound != line.branchesHit) return 'partial';
+  return 'covered';
+}
+
+function countHits(line) {
+  if (typeof line === 'undefined' || isNaN(line.hit)) return '';
+  return `${line.hit}×`;
+}
 
 class FileView extends React.Component {
   render() {
     const { source, lineMap, extension } = this.props;
+    const lines = source.split('\n');
 
-    return (<div className='file-view' style={{ paddingTop: '0', paddingBottom: '0', backgroundColor: 'rgba(255, 245, 211, 0.5)', fontSize: "13px" }}>
+    return (<div className='file-view' style={{ paddingTop: '0', paddingBottom: '0', backgroundColor: '#fdf6e3', fontSize: "13px" }}>
       <div className="cov-layer">
-        {source.split('\n').map((l, i) => {
-          const covClass = !isNaN(lineMap[i]) ? lineMap[i] == 0 ? 'uncovered' : 'covered' : '';
-          const count = !isNaN(lineMap[i]) ? `${lineMap[i]}×` : '';
-          return (<span className={`times ${covClass}`}>{count}</span>)
-        }, [])}
+        {lines
+          .map((l, i) => lineMap[i])
+          .map(line => (<span className={`times ${coverageStatus(line)}`}>{countHits(line)}</span>))}
       </div>
       <div className="src-layer">
         <div className="line-numbers">
-          {source.split('\n').map((l, i) => {
-            return (<a id={`L${i}`} className="line-number" href={`#L${i}`}>{i}</a>)
-          }, [])}
+          {lines.map((l, i) => (<a id={`L${i}`} className="line-number" href={`#L${i}`}>{i}</a>))}
         </div>
         <div className="source-code">
           <pre style={{margin: '0', padding: '0'}}>
