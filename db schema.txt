@@ -1,0 +1,34 @@
+project
+-------
+- uid: u64
+- typ: gitlab, github, etc (string)
+- rep: gabriel-araujjo/coverage-example-c
+
+report
+------
+- uid: u64
+- pid: project_id
+- com: commit hash
+- cdt: creation date
+
+file
+----
+- uid: u64
+- rid: report id
+- pat: relative path (ex. example.c, main.cc, src/main.cc)
+
+line_cov
+--------
+- fid: file id
+- lno: line number (starts with zero)
+- ect: number of times the line was executed
+- cov: ful (full), par (partial), nex (not executed)
+
+func_cov
+--------
+- fid: file id
+- lno: line number (starts with 0)
+- fna: function name or demangled_name
+- ect: execution count (how many times the function was executed)
+- bct: numbers of blocks
+- bex: how many blocks were executed 

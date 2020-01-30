@@ -47,7 +47,7 @@ class FileView extends React.Component {
 
 FileView.propTypes = {
   source: PropTypes.string,
-  lineMap: PropTypes.array,
+  lineMap: PropTypes.object,
   extension: PropTypes.string
 };
 

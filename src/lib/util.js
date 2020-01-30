@@ -2,6 +2,7 @@ module.exports.parseCoverage = function parseCoverage(history, branch) {
   // if no branch don't worry about parsing for a particular one
 
   const data = [[], []];
+  console.log(history);
   history.forEach(function(history) {
     const { git, source_files } = history;
     if(branch ? (branch === (git.branch || git.git_branch)) : true) {
@@ -17,10 +18,13 @@ module.exports.parseCoverage = function parseCoverage(history, branch) {
         }
       });
 
-      data[0].push(Total);
-      data[1].push(TotalLines);
+      console.log(`${git.branch || git.git_branch} (${TotalLines}/${Total})`);
+      data[0].unshift(Total);
+      data[1].unshift(TotalLines);
     }
   });
+
+  console.log(data);
 
   // If there is only one data point
   // add another that is the same value to make a line
@@ -28,6 +32,8 @@ module.exports.parseCoverage = function parseCoverage(history, branch) {
       data[0].push(data[0][0]);
       data[1].push(data[1][0]);
   }
+
+  console.log(data);
 
   return data;
 };
