@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+const {ArgumentParser} = require('argparse');
+const fs = require('fs');
+const updateNotifier = require('update-notifier');
+const cli = require('../lib/cli');
+const pkg = require('../package.json');
+
+updateNotifier({pkg}).notify();
+
+const argsParser = new ArgumentParser({
+  version: '0.0.1',
+  addHelp: true,
+  description: 'Upload coverage report to a server'
+});
+
+const availableParsers = Object.keys(require('../lib/parsers')).join(', ');
+argsParser.addArgument(['-r', '--report'], {
+  help: `default: gcov; options: ${availableParsers}`,
+  defaultValue: 'gcov'
+});
+
+argsParser.addArgument(
+    ['-C', '--directory'],
+    {help: 'Change to directory DIR.', optionStrings: 'DIR'});
+
+argsParser.addArgument(
+    'file', {nargs: '?', help: 'Report to be uploaded (default: stdin)'});
+
+argsParser.addArgument(
+    ['-u', '--url'],
+    {nargs: '1', help: 'URL where report will upload to.', required: true});
+
+argsParser.addArgument(
+    ['-e', '--exclude'],
+    {nargs: '+', help: 'Exclude file or blob', defaultValue: []});
+
+const args = argsParser.parseArgs();
+
+if (args.directory) process.chdir(args.directory);
+
+const excludes = args.exclude.map(e => {
+  const parts = [];
+  for (const p of e.split('/')) {
+    if (p === '**') {
+      parts.push('.*');
+      continue;
+    }
+    parts.push(p.replace('.', '\\.').replace(/\*+/, '[^\\/]+'));
+  }
+  return new RegExp(parts.join('\\/'));
+});
+
+const parser = args.report;
+const input = args.file ? fs.createReadStream(args.file) : process.stdin;
+const shouldExclude = file => {
+  for (const regexp of excludes) {
+    if (regexp.test(file)) return false;
+  }
+  return true;
+};
+const url = args.url[0];
+
+cli({parser, input, shouldExclude, url})
+    .then(() => console.log('coverage sent successfully to 💚'))
+    .catch(err => console.trace(err));
