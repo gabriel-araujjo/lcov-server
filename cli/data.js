@@ -1,10 +1,10 @@
-const lno_symbol = Symbol()
-const hit_symbol = Symbol()
-const bct_symbol = Symbol()
-const bex_symbol = Symbol()
-const sln_symbol = Symbol()
-const eln_symbol = Symbol()
-const fna_symbol = Symbol()
+const lno_symbol = Symbol('lno')
+const hit_symbol = Symbol('hit')
+const bct_symbol = Symbol('bct')
+const bex_symbol = Symbol('bex')
+const sln_symbol = Symbol('sln')
+const eln_symbol = Symbol('eln')
+const fna_symbol = Symbol('fna')
 
 class Line {
 
@@ -19,7 +19,7 @@ class Line {
     get bct() { return this[bct_symbol] || 1 }
     set bct(count) { this[bct_symbol] = count || 1 }
 
-    get bex() { return this[bex_symbol] || Number(this.hit > 1) }
+    get bex() { return this[bex_symbol] || Number(this.hit > 0) }
     set bex(executed) { this[bex_symbol] = executed }
 
     addExecutedBranch() {

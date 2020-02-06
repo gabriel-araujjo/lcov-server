@@ -3,8 +3,9 @@
 const {ArgumentParser} = require('argparse');
 const fs = require('fs');
 const updateNotifier = require('update-notifier');
-const cli = require('../lib/cli');
+const cli = require('../cli');
 const pkg = require('../package.json');
+const path = require('path')
 
 updateNotifier({pkg}).notify();
 
@@ -14,7 +15,7 @@ const argsParser = new ArgumentParser({
   description: 'Upload coverage report to a server'
 });
 
-const availableParsers = Object.keys(require('../lib/parsers')).join(', ');
+const availableParsers = Object.keys(require('../cli/parsers')).join(', ');
 argsParser.addArgument(['-r', '--report'], {
   help: `default: gcov; options: ${availableParsers}`,
   defaultValue: 'gcov'
@@ -33,13 +34,14 @@ argsParser.addArgument(
 
 argsParser.addArgument(
     ['-e', '--exclude'],
-    {nargs: '+', help: 'Exclude file or blob', defaultValue: []});
+    {nargs: '+', help: 'Exclude file or glob', defaultValue: []});
 
 const args = argsParser.parseArgs();
 
 if (args.directory) process.chdir(args.directory);
 
 const excludes = args.exclude.map(e => {
+  e = path.resolve(e)
   const parts = [];
   for (const p of e.split('/')) {
     if (p === '**') {
@@ -54,6 +56,10 @@ const excludes = args.exclude.map(e => {
 const parser = args.report;
 const input = args.file ? fs.createReadStream(args.file) : process.stdin;
 const shouldExclude = file => {
+  // skip files outside project
+  if (!path.resolve(file).startsWith(process.cwd())) return false;
+
+  // test used  
   for (const regexp of excludes) {
     if (regexp.test(file)) return false;
   }
@@ -62,5 +68,12 @@ const shouldExclude = file => {
 const url = args.url[0];
 
 cli({parser, input, shouldExclude, url})
-    .then(() => console.log('coverage sent successfully to 💚'))
-    .catch(err => console.trace(err));
+    .then(location => {
+      console.error(`coverage sent successfully to 💚`);
+      console.error(`you can access the report at ${location}`);
+    })
+    .catch(err => {
+      console.error('Cannot upload report 😓')
+      console.error(err.message);
+      process.exit(1);
+    });

@@ -1,9 +1,12 @@
-const fs = require('fs');
 const zlib = require('zlib');
 const {Line, Func} = require('../data');
 
 function parseFile({file, lines, functions}) {
-  return [file, lines.map(parseLine), functions.map(parseFunc)];
+  try {
+    return [file, lines.map(parseLine), functions.map(parseFunc)];
+  } catch (e) {
+    throw Error(`Error parsing coverage of file ${file} `);
+  }
 }
 
 function parseLine({line_number: lno, count: hit, branches}) {
@@ -29,15 +32,14 @@ function parseFunc({
 
 function walkFile(jsonString, shouldExclude) {
   const covJson = JSON.parse(jsonString);
-  return covJson.files
-    .filter(({file}) => shouldExclude(file))
-    .map(parseFile);
+  return covJson.files.filter(({file}) => shouldExclude(file)).map(parseFile);
 }
 
 /**
  * returns a javascript object that represents the coverage data
  * @method parse
- * @param  {NodeJS.ReadStream} input - this can either be a string or a path to a file
+ * @param  {NodeJS.ReadStream} input - this can either be a string or a path to
+ *     a file
  * @return {Coverage} - The coverage data structure
  *
  */
@@ -47,13 +49,14 @@ async function parse(input, shouldExclude) {
 }
 
 function uncompressFile(input) {
-  const chunks = []
-  return new Promise((resolve, reject) =>
-    input.pipe(zlib.createGunzip())
-      .on('data', chunk => chunks.push(chunk))
-      .on('error', reject)
-      .on('end', () => resolve(Buffer.concat(chunks).toString('utf-8')))
-  )
+  const chunks = [];
+  return new Promise(
+      (resolve, reject) =>
+          input.pipe(zlib.createGunzip())
+              .on('data', chunk => chunks.push(chunk))
+              .on('error', reject)
+              .on('end',
+                  () => resolve(Buffer.concat(chunks).toString('utf-8'))))
 }
 
 module.exports = {

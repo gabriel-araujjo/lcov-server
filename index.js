@@ -3,6 +3,7 @@ require('dotenv').config()
 const express = require('express');
 // const Badge = require('badgeit');
 // const parse = require('git-url-parse');
+const {missingQueryParams, parseError} = require('./lib/errors');
 const path = require('path');
 const serveStatic = require('serve-static');
 const compression = require('compression');
@@ -21,6 +22,7 @@ app.use(bodyParser.json({limit: '100MB'}));
 app.use(compression());
 app.use(serveStatic(path.resolve(__dirname, 'dist')));
 
+
 app.post('/api/upload', (req, res, next) => {
   Coverage.save(req.body)
       .then(([rep, com]) => {
@@ -32,7 +34,22 @@ app.post('/api/upload', (req, res, next) => {
       .catch(next);
 });
 
-// app.get('/api/report')
+app.get('/api/report', (req, res, next) => {
+  const {rep, com} = req.query;
+
+  if (!req || !com) return next(missingQueryParams(['rep', 'com']));
+
+  Coverage.getCommitCoverage(rep, com)
+      .then(report => res.send(report))
+      .catch(next);
+})
+
+app.use(function(err, req, res, next) {
+  err = parseError(err);
+  if (err.unexpected || app.get('env') == 'development')
+    console.error(err.stack);
+  res.status(err.status).json(err);
+})
 
 // app.get('/api/repos', asyncMiddleware(async (req, res) => {
 //           try {
