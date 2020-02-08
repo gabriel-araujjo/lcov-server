@@ -1,19 +1,35 @@
 project
 -------
-- uid: u64
-- typ: gitlab, github, etc (string)
+- gid: u64
+- typ: gitlab, github, etc (string) NOT YET
 - rep: gabriel-araujjo/coverage-example-c
 
 report
 ------
-- uid: u64
+- gid: u64
 - pid: project_id
 - com: commit hash
-- cdt: creation date
+- bra: symbolic name of commit
+- rat: run at (timestamp)
+- ci: enum(
+        travis-ci,
+        drone,
+        jenkins,
+        circleci,
+        codeship,
+        wercker,
+        gitlab-ci,
+        appveyor,
+        surf
+      )
+- job: job identifier
+- prq: pull request or merge request id
+- bct: total block count in report
+- bex: total block executed in report
 
 file
 ----
-- uid: u64
+- gid: u64
 - rid: report id
 - pat: relative path (ex. example.c, main.cc, src/main.cc)
 
@@ -21,14 +37,16 @@ line_cov
 --------
 - fid: file id
 - lno: line number (starts with zero)
-- ect: number of times the line was executed
-- cov: ful (full), par (partial), nex (not executed)
+- hit: number of times the line was executed
+- bct: branch count
+- bex: branches executed
 
 func_cov
 --------
 - fid: file id
-- lno: line number (starts with 0)
+- sln: line where function starts (starts with 0)
+- eln: line where function ends (starts with 0)
 - fna: function name or demangled_name
-- ect: execution count (how many times the function was executed)
+- hit: execution count (how many times the function was executed)
 - bct: numbers of blocks
 - bex: how many blocks were executed 

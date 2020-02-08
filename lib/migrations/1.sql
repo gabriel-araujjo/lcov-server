@@ -23,7 +23,7 @@ CREATE TABLE report (
     bra text NOT NULL, -- branch name
     rat timestamp NOT NULL, -- run at
     ci citype, -- type of ci
-    job text, -- job
+    job text, -- job [FUTURE USE]
     prq text, -- pull request or merge request id
     bct bigint NOT NULL, -- total block counts in this report
     bex bigint NOT NULL, -- total blocks executed int this report

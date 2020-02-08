@@ -8,17 +8,14 @@ const path = require('path');
 const serveStatic = require('serve-static');
 const compression = require('compression');
 const bodyParser = require('body-parser');
-const zlib = require('zlib');
 const url = require('url');
-
-zlib.level = zlib.Z_BEST_COMPRESSION;
 
 const Coverage = require('./lib/coverage');
 
 const port = process.env.PORT || 8080;
 const app = express();
 
-app.use(bodyParser.json({limit: '100MB'}));
+app.use(bodyParser.json({limit: '10MB'}));
 app.use(compression());
 app.use(serveStatic(path.resolve(__dirname, 'dist')));
 
@@ -41,6 +38,26 @@ app.get('/api/report', (req, res, next) => {
 
   Coverage.getCommitCoverage(rep, com)
       .then(report => res.send(report))
+      .catch(next);
+})
+
+app.get('/api/project', (req, res, next) => {
+  const {rep} = req.query;
+
+  if (!rep) return next(missingQueryParams(['rep']));
+  Coverage.getProjectCoverage(rep, new Date, 999999)
+      .then(reports => res.send(reports))
+      .catch(next);
+});
+
+app.get('/api/file', (req, res, next) => {
+  const {rep, com, pat} = req.query;
+
+  if (!rep || !com || !pat)
+    return next(missingQueryParams(['rep', 'com', 'pat']));
+
+  Coverage.getFileCoverage(rep, com, pat)
+      .then(file => res.send(file))
       .catch(next);
 })
 
