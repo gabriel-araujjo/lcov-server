@@ -1,13 +1,8 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
-import Layout from './layout';
-import Main from './main';
-import Feed from './coverage/feed';
-import List from './coverage/list';
-import Coverage from './coverage/coverage';
-import File from './coverage/file';
 import Error from './components/error';
+import Layout from './layout';
 
 function Dummy({match: {params}}) {
   console.log(params)
@@ -28,7 +23,7 @@ export default (
         <Route path="/coverage/:page?" component={List} />
         <Route exact path="/feed" component={Feed} />
         <Route exact path="/" component={Main} /> */}
-        <Route path="*" component={Error} />
+        <Route path='*' component={Error} />
       </Switch>
     </Layout>
   </BrowserRouter>

@@ -11,7 +11,17 @@ import Loading from '../components/loading';
 import { parseCoverage } from '../lib/util';
 import './coverage.css';
 
-const coverageGradient = ['#58B265', '#8AC564', '#D1D870', '#D1D870', '#D1D870', '#DFC780', '#E6B490', '#ECA9A1', '#F1B2C0']
+const coverageGradient = [
+  '#58B265',
+  '#8AC564',
+  '#D1D870',
+  '#D1D870',
+  '#D1D870',
+  '#DFC780',
+  '#E6B490',
+  '#ECA9A1',
+  '#F1B2C0'
+]
 
 class Coverage extends React.Component {
   constructor(props) {
