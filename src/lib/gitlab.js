@@ -1,5 +1,24 @@
 const gitlabBase = 'https://gitlab.com';
 
+function urlQuery(query) {
+  const esc = encodeURIComponent;
+  return Object.entries(query)
+      .map(([key, value]) => esc(key) + '=' + esc(value))
+      .join('&');
+}
+
+async function authenticate(state) {
+  const query = urlQuery({
+    client_id: process.env.REACT_APP_GITLAB_CLIENT_ID,
+    redirect_uri: new URL('/cb'),
+    response_type: 'code',
+    scope: 'read_repository',
+    state
+  });
+
+  
+}
+
 async function getProjectId(rep) {
   const query = `query ProjectId($rep: ID!) {
         project(fullPath: $rep) {id}
@@ -22,10 +41,7 @@ async function getProjectTree(id, com, path) {
   let query = {};
   if (com) query.ref = com;
   if (path) query.path = path;
-  var esc = encodeURIComponent;
-  query = Object.entries(query)
-              .map(([key, value]) => esc(key) + '=' + esc(value))
-              .join('&');
+  query = urlQuery(query);
   if (query) url += '?' + query;
   let nextPage = url;
   let pages = [];
