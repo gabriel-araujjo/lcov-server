@@ -1,30 +1,12 @@
-const gitlabBase = 'https://gitlab.com';
+const base = 'https://gitlab.com/api';
 
-function urlQuery(query) {
-  const esc = encodeURIComponent;
-  return Object.entries(query)
-      .map(([key, value]) => esc(key) + '=' + esc(value))
-      .join('&');
-}
+import {urlQuery} from './util.js';
 
-async function authenticate(state) {
-  const query = urlQuery({
-    client_id: process.env.REACT_APP_GITLAB_CLIENT_ID,
-    redirect_uri: new URL('/cb'),
-    response_type: 'code',
-    scope: 'read_repository',
-    state
-  });
+export async function getProjectIdAndLastCommit(rep) {
+  const query =
+      `query ProjectId($rep: ID!) { project(fullPath: $rep) {id, repository {tree{lastCommit{sha}}}} }`;
 
-  
-}
-
-async function getProjectId(rep) {
-  const query = `query ProjectId($rep: ID!) {
-        project(fullPath: $rep) {id}
-    }`;
-
-  const response = await fetch(`${gitlabBase}/api/graphql`, {
+  const response = await fetch(`${base}/graphql`, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({query, variables: {rep}})
@@ -32,12 +14,12 @@ async function getProjectId(rep) {
   const json = await response.json();
   const project = json.data.project;
   if (!project) throw Error('not found');
-  const id = project.id;
-  return id.substr(id.lastIndexOf('/') + 1);
+  const {id, repository: {tree: {lastCommit: {sha}}}} = project;
+  return [id.substr(id.lastIndexOf('/') + 1), sha];
 }
 
 async function getProjectTree(id, com, path) {
-  let url = new URL(`/api/v4/projects/${id}/repository/tree`, gitlabBase);
+  let url = `${base}/v4/projects/${id}/repository/tree`;
   let query = {};
   if (com) query.ref = com;
   if (path) query.path = path;
@@ -55,8 +37,13 @@ async function getProjectTree(id, com, path) {
   return pages.flat();
 }
 
+export async function getProjectBlob(id, com, path) {
+  const url = `${base}/v4/projects/${encodeURIComponent(id)}/repository/files/${encodeURIComponent(path)}/raw?ref=${encodeURIComponent(com)}`;
+  const response = await fetch(url);
+  return await response.text();
+}
+
 function parsePaginationHeader(response) {
-  console.log(response.headers.get('Link'));
   return Object.fromEntries(
       response.headers.get('Link').split(',').map(link => {
         const [url, relPart] = link.split(';');
@@ -65,5 +52,13 @@ function parsePaginationHeader(response) {
       }));
 }
 
-id = await getProjectId('sbtvd-html5/wpt');
-t = await getProjectTree(id);
+// TODO
+async function authenticate(state) {
+  const query = urlQuery({
+    client_id: process.env.REACT_APP_GITLAB_CLIENT_ID,
+    redirect_uri: new URL('/cb'),
+    response_type: 'code',
+    scope: 'read_repository',
+    state
+  });
+}

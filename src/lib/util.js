@@ -1,4 +1,12 @@
-module.exports.parseCoverage = function parseCoverage(history, branch) {
+export function urlQuery(query) {
+  const esc = encodeURIComponent;
+  return Object.entries(query)
+      .filter(([_, value]) => value)
+      .map(([key, value]) => esc(key) + '=' + esc(value))
+      .join('&');
+}
+
+export function parseCoverage(history, branch) {
   // if no branch don't worry about parsing for a particular one
 
   const data = [[], []];

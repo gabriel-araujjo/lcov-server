@@ -1,73 +1,29 @@
-* {
-  font-family: "Helvetica Neue", Sans-serif, Arial;
-}
-
-html {
-    box-sizing: border-box;
-    height: 100%;
-}
+@import url('https://fonts.googleapis.com/css?family=Spartan:700&display=swap'); */
 body {
-    position: relative;
-    margin: 0;
-    padding-bottom: 6rem;
-    min-height: 100%;
-    width: 100%;
-}
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
-}
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-#coverage-area {
-    height: 100%;
-    width: 100%;
+  font-family: -apple-system,BlinkMacSystemFont,Ubuntu,Cantarell,"Segoe UI",Roboto,Oxygen-Sans,"Helvetica Neue",sans-serif;
 }
 
-.footer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  text-align: center;
+code {
+  font-family: 'Fira Code',SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
 }
 
-.list-item-danger {
-    border-top: 1px solid rgba(255, 135, 129, 0.5) !important;
-    border-right: 1px solid rgba(255, 135, 129, 0.5) !important;
-    border-left: 1px solid rgba(255, 135, 129, 0.5) !important;
-    background-color: rgba(255, 105, 97, 0.8) !important;
+* {
+  box-sizing: border-box;
 }
 
-.list-item-success {
-    border-top: 1px solid rgba(146, 228, 146, .5) !important;
-    border-right: 1px solid rgba(146, 228, 146, 0.5) !important;
-    border-left: 1px solid rgba(146, 228, 146, 0.5) !important;
-    background-color: rgba(119, 221, 119, 0.8) !important;
+pre {
+  background-color: #0a0b21;
+  font-size: 13px;
+  line-height: 1.42857143;
+  word-break: break-all;
+  color: #fff;
 }
 
-.coverage {
-  margin-bottom: 50px;
-  margin-left: 50px;
-  margin-right: 50px;
-}
-.coverage-header {
-  max-width: 1080px;
-  margin: 0 auto;
-}
-.coverage-commit-message {
-  text-overflow: ellipsis;
-	width: 200px;
-	white-space: nowrap;
-	overflow: hidden;
-  display: inline-block;
-  vertical-align: bottom;
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
 }
 
-ul.dropdown-menu.rbt-menu.dropdown-menu-justify {
-  position: absolute;
+code>table {
+  overflow-x: auto;
 }

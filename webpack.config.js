@@ -4,18 +4,20 @@ const path = require('path');
 const MinifyPlugin = require('babel-minify-webpack-plugin');
 
 var config = {
+    mode: 'development',
     entry: {
-      app: ['babel-polyfill', 'whatwg-fetch', './src/app.js'],
-      vendor: ['react', 'react-select', 'react-dom', 'react-router-dom', 'prop-types', 'highlight.js', 'whatwg-fetch'],
+      app: ['babel-polyfill', /*'whatwg-fetch',*/ './src/app.js'],
+      // vendor: ['react', 'react-select', 'react-dom', 'react-router-dom', 'prop-types', 'highlight.js', 'whatwg-fetch'],
     },
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: '[name].js'
     },
+    devtool: 'cheap-source-map',
     devServer: {
         proxy: {
             "/api/**": "http://localhost:8080",
-            "/*.svg": "http://localhost:8080",
+            // "/*.svg": "http://localhost:8080",
             "/badge/**": "http://localhost:8080"
         },
         contentBase: 'dist',
@@ -43,7 +45,7 @@ var config = {
         cacheGroups: {
           commons: {
             test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
+            name: 'vendor',
             chunks: 'all'
           }
         }

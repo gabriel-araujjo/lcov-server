@@ -1,111 +1,60 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import {json} from 'body-parser';
 import moment from 'moment';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import CoverageChart from '../components/coverageChart';
 import Error from '../components/error';
-import NoCoverage from '../components/noCoverage';
+import {FileView, FileViewPlaceHolder} from '../components/fileView';
 import Loading from '../components/loading';
-import FileView from '../components/fileView';
+import NoCoverage from '../components/noCoverage';
+import {getFileCoverage} from '../lib/covera.js'
+import {getProjectBlob, getProjectIdAndLastCommit} from '../lib/gitlab.js';
 
-import { parseCoverage } from '../lib/util';
+// import {parseCoverage} from '../lib/util.js';
 
 class File extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      error: '',
-      loading: true
-    };
+    this.state = {error: '', loading: true};
   }
 
   async componentDidMount() {
-    const { source, owner, name } = this.props.match.params;
-    const url = `/api/coverage/${source}/${owner}/${name}`;
+    let {rep, com, file} = this.props.match.params;
 
+    if (!com) com = 'master';
     try {
-      const response = await fetch(url);
-      const project = await response.json();
-
+      const blob = getProjectBlob(rep, com, file);
+      const report = getFileCoverage(rep, com, file);
+      const breadcrumb = file.slice('/');
+      let tokenizedFile;
+      if (report) 
+        tokenizedFile = await FileView.tokenizeFile(await blob);
       this.setState({
-        project: project[0],
+        breadcrumb,
+        tokenizedFile,
+        rep: await report,
         loading: false
       });
-    } catch(ex) {
-      this.setState({
-        error: ex.toString(),
-        loading: false
-      });
+    } catch (ex) {
+      this.setState({error: ex.toString(), loading: false});
     }
   }
 
   render() {
-      const { project, error, loading } = this.state;
-      const { source, owner, name } = this.props.match.params;
+    const {tokenizedFile, rep, error, loading} = this.state;
+    if (loading) return <FileViewPlaceHolder />;
+    if (error) return <Error error = { error } />;
+    if (!rep) return <NoCoverage />;
 
-      if(loading) {
-        return <Loading />;
-      }
-
-      if(error) {
-          return <Error error={error}/>;
-      }
-
-      if(project) {
-          const lineMap = {};
-          const file = this.props.match.params.file.replace('%2E', '.');
-          let { _id, history } = project;
-          history = history[0];
-
-          const fileSource = history.source_files.filter((f) => {
-              return f.title === file;
-          })[0];
-
-          const { lines={ found: 0, hit: 0 }, branches } = fileSource;
-
-          lines.details.forEach(({ line, hit }) => {
-              lineMap[line - 1] = { hit, branchesFound: 0, branchesHit: 0 }
-          });
-          branches.details.forEach(({ line, taken }) => {
-              const lineDetail = lineMap[line - 1] = lineMap[line - 1] || {hit: 0, branchesFound: 0, branchesHit: 0};
-              lineDetail.branchesFound++;
-              if (taken) lineDetail.branchesHit++;
-          })
-          const linePercentage = parseInt(((lines.hit / lines.found) || 1) * 100);
-          const percentage = parseInt(linePercentage);
-          const color = linePercentage >= 90 ? '#008a44' : linePercentage <= 89 && linePercentage >= 80 ? '#cfaf2a' : '#c75151';
-
-          const { message, commit, branch, author_name, author_date } = history.git;
-          const commitUrl = `${_id.replace('.git', '')}/commit/${commit}`;
-
-          return (<div className="coverage">
-            <div className="coverage-header">
-               <div style={{display: 'inline-block', width: '100%'}}>
-                 <div style={{float: 'left', textAlign: 'left'}}>
-                     <h3> <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/`}>{owner}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}`}>{name}</a> / <a href={`/coverage/${source.replace(/\./g, '%2E')}/${owner}/${name}/${encodeURIComponent(file).replace(/\./g, '%2E')}`}>{fileSource.file}</a> <span style={{color: color}}>{ percentage }%</span></h3>
-                     <p>
-                       <a className="coverage-commit-message" href={commitUrl} target="_blank" rel="noopener noreferrer"> {message} </a>
-                       on branch
-                       <b> {branch} </b>
-                       {moment(author_date * 1000).fromNow()}
-                       &nbsp;by
-                       <b> {author_name} </b>
-                     </p>
-                 </div>
-               </div>
-               <CoverageChart width={window.innerWidth - 200} data={parseCoverage(project.history)} height={100} />
-            </div>
-            <br/>
-            <FileView source={fileSource.source} lineMap={lineMap} extension={file.substr(file.lastIndexOf('.') + 1, file.length)}/>
-          </div>);
-      } else {
-        return <NoCoverage/>;
-      }
+    const [sha, bra, rat, , , , , , lines, functions] = rep
+    return (
+      <section>
+        <FileView tokenizedFile={tokenizedFile} lineCoverage={lines}/>
+      </section>
+    )
   }
-}
 
-File.propTypes = {
-  match: PropTypes.object
-};
+}
 
 export default File;
