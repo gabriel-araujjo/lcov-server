@@ -1,34 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { version } from '../package.json';
+import Header from './components/header';
 
 class Layout extends React.Component {
   render () {
     const { children } = this.props;
 
     return (
-      <div>
-        <div className="navbar">
-          <div className="container">
-            <div className="navbar-title">
-              <a className="text-black" href="/">
-                <span className="text-black">Coverage server</span>
-              </a>
-            </div>
-            <div className="nav">
-              <a className="text-black" href="/feed">
-                Recent
-              </a>
-              <a className="text-black" href="/coverage">
-                Reports
-              </a>
-            </div>
-          </div>
-        </div>
-        <div>
-          { children }
-        </div>
-        <div className="footer text-center">
+      <React.Fragment>
+        <header className='col-2'><Header/></header>
+        { children }
+        <footer className='col-2'>
           <div>
             <a className="text-black" target="_blank" rel="noopener noreferrer" href="https://github.com/gabrielcsapo/lcov-server">Source</a>
             &nbsp;·&nbsp;
@@ -39,8 +22,8 @@ class Layout extends React.Component {
           <div className="text-black">
             <p>©{(new Date()).getFullYear()} <a target="_blank" rel="noopener noreferrer" href="http://gabrielcsapo.com">gabrielcsapo</a></p>
           </div>
-        </div>
-      </div>
+        </footer>
+      </React.Fragment>
     );
   }
 }

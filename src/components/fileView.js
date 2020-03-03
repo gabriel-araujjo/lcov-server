@@ -116,7 +116,7 @@ function* explodedLineCoverage(cov) {
       yield [];
       continue;
     }
-    const className = bct != bex
+    let className = bct != bex
       ? !bex ? 'mis' : 'par'
       : 'ok';
     cur = itCov.next();
@@ -136,7 +136,7 @@ function* renderLines(lines, cov) {
 
   while (true) {
     const line = itLines.next();
-    const [hit, bct, bex, coverageStatus=''] = itCoverage.next().value;
+    let [hit, bct, bex, coverageStatus=''] = itCoverage.next().value;
     // TODO: use bct and bex to create a badge [2 of 8 branches]
     if (line.done) break;
     let hits = '';

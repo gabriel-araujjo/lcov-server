@@ -1,6 +1,8 @@
-const base = 'https://gitlab.com/api';
+export function baseUrl() { return 'https://gitlab.com'; }
+const base = `${baseUrl()}/api`;
 
 import {urlQuery} from './util.js';
+
 
 export async function getProjectIdAndLastCommit(rep) {
   const query =

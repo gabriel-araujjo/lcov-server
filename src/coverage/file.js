@@ -6,10 +6,9 @@ import React from 'react';
 import CoverageChart from '../components/coverageChart';
 import Error from '../components/error';
 import {FileView, FileViewPlaceHolder} from '../components/fileView';
-import Loading from '../components/loading';
 import NoCoverage from '../components/noCoverage';
 import {getFileCoverage} from '../lib/covera.js'
-import {getProjectBlob, getProjectIdAndLastCommit} from '../lib/gitlab.js';
+import {getProjectBlob} from '../lib/gitlab.js';
 
 // import {parseCoverage} from '../lib/util.js';
 
@@ -43,16 +42,20 @@ class File extends React.Component {
 
   render() {
     const {tokenizedFile, rep, error, loading} = this.state;
-    if (loading) return <FileViewPlaceHolder />;
-    if (error) return <Error error = { error } />;
-    if (!rep) return <NoCoverage />;
+    let mainContent;
+    let sideContent
+    if (loading)
+      mainContent = <FileViewPlaceHolder />;
+    else if (error)
+      mainContent = <Error error = { error } />;
+    else if (!rep)
+      mainContent = <NoCoverage />;
+    else {
+      const [sha, bra, rat, , , , , , lines, functions] = rep
+      mainContent = <FileView tokenizedFile={tokenizedFile} lineCoverage={lines}/>;
+    }
 
-    const [sha, bra, rat, , , , , , lines, functions] = rep
-    return (
-      <section>
-        <FileView tokenizedFile={tokenizedFile} lineCoverage={lines}/>
-      </section>
-    )
+    return (<section className='col-2'>{mainContent}</section>);
   }
 
 }

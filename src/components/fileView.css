@@ -6,7 +6,9 @@
   --ok-dark: #022900;
   --ok-medium: #426742;
   --ok-light: #8BC34A;
-  --ph-color: #232447;
+  --ph-color: #2f316c;
+  --num-min-width: 6ex;
+  --line-hit-min-width: 3em;
 }
 
 code {
@@ -18,7 +20,7 @@ code {
   text-align: right;
   color: #565875;
   padding: var(--line-padding);
-  min-width: 4em;
+  min-width: var(--num-min-width);
 }
 
 .lnum:before {
@@ -28,7 +30,7 @@ code {
 .line-hit {
   text-align: right;
   padding: var(--line-padding);
-  min-width: 3em;
+  min-width: var(--line-hit-min-width);
 }
 
 .hit-bg {
@@ -54,7 +56,7 @@ code {
 .lcode {
   padding: var(--line-padding);
   min-width: max-content;
-  grid-column: 3;
+  padding-right: 15pt;
 }
 
 /* .begin {
@@ -143,7 +145,7 @@ code {
 
 .h.t {
   font-style: italic;
-  color: #66D9EF
+  color: #72e8ff
 }
 
 .e.g.b {
@@ -227,7 +229,7 @@ code {
 [data-ph-width='20'] { --ph-width: 20ex }
 
 @keyframes phAnimation {
-  0% { transform: translateX(-50%) }
+  0% { transform: translateX(0) }
   100% { transform: translateX(50%) }
 }
 
@@ -239,7 +241,7 @@ code {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 7em;
+  left: calc(var(--line-hit-min-width) + var(--num-min-width));
   right: 0;
   overflow: hidden;
 }
@@ -249,9 +251,9 @@ code {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 0;
+  left: -100%;
   right: 0;
-  background: linear-gradient(to right, rgba(10, 11, 33, 0) 46%, rgba(10, 11, 33, 0.35) 50%, rgba(10, 11, 33, 0) 54%) 50% 50%;;
+  background: linear-gradient(to right, rgba(10, 11, 33, .35) 48%, rgba(10, 11, 33, 0) 50%, rgba(10, 11, 33, .35) 52%) 50% 50%;;
   animation: phAnimation 1.2s linear infinite;
 }
 
