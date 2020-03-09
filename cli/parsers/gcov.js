@@ -1,5 +1,8 @@
 const zlib = require('zlib');
 const {Line, Func} = require('../data');
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require("child_process");
 
 function parseFile({file, lines, functions}) {
   try {
@@ -11,7 +14,7 @@ function parseFile({file, lines, functions}) {
 
 function parseLine({line_number: lno, count: hit, branches}) {
   const bct = branches.length;
-  const bex = branches.reduce((acc, {count}) => acc + count, 0);
+  const bex = branches.reduce((acc, {count}) => acc + Boolean(count), 0);
 
   return new Line({lno, hit, bct, bex});
 }
@@ -35,6 +38,22 @@ function walkFile(jsonString, shouldExclude) {
   return covJson.files.filter(({file}) => shouldExclude(file)).map(parseFile);
 }
 
+function* gcnoFiles(dirPath) {
+  const directory = fs.opendirSync(dirPath);
+
+  let dirent;
+  while(dirent = directory.readSync()) {
+    if (dirent.isFile() && dirent.name.endsWith('.gcno'))
+      yield path.join(dirPath, dirent.name);
+    if (dirent.isDirectory()) {
+      for (const file of gcnoFiles(path.join(dirPath, dirent.name))) {
+        yield file;
+      }
+    }
+  }
+  directory.closeSync();
+}
+
 /**
  * returns a javascript object that represents the coverage data
  * @method parse
@@ -43,9 +62,13 @@ function walkFile(jsonString, shouldExclude) {
  * @return {Coverage} - The coverage data structure
  *
  */
-async function parse(input, shouldExclude) {
-  const text = await uncompressFile(input)
-  return walkFile(text, shouldExclude);
+function parse(shouldExclude) {
+  const array = [];
+  for (let gcnoFile of gcnoFiles(process.cwd())) {
+    const text = execSync(`gcov -bitcam ${gcnoFile}`).toString('utf-8');
+    array.push(walkFile(text, shouldExclude));
+  }
+  return array.flat();
 }
 
 function uncompressFile(input) {

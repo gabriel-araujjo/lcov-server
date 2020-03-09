@@ -1,11 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@600&display=swap');
+
 body {
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,"Helvetica Neue",Ubuntu,Cantarell,sans-serif;
-  color: gray;
+  color: #606569;
 }
 
 #root {
   display: grid;
-  grid-template-columns: 1fr minmax(min-content, 1100px) 1fr;
+  grid-template-columns: 1fr minmax(0, 1100px) 1fr;
+  grid-gap: 0 2rem;
 }
 
 .col-1 {
@@ -20,8 +23,15 @@ body {
   grid-column: 3;
 }
 
+.breadcrumb > a {
+  display: inline-block;
+  color: inherit;
+}
+
 code {
   font-family: 'Fira Code',SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+  padding: 4pt 0;
+  overflow-x: auto;
 }
 
 * {
@@ -35,7 +45,8 @@ pre {
   word-break: break-all;
   color: #fff;
   border-radius: 5pt;
-  padding: 5pt 0;
+  overflow: hidden;
+  border: 1px solid #0a0b21;
 }
 
 a {
@@ -43,15 +54,19 @@ a {
   color: #0c78d6;
 }
 
+a:hover {
+  text-decoration: underline;
+}
+
+a.current {
+  font-weight: bold;
+}
+
 /* a:visited {
   color: initial;
 } */
 
-h1 {
-  font-weight: normal;
-}
-
-h2 {
+h1, h2, h3 {
   font-weight: normal;
 }
 

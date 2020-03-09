@@ -26,9 +26,6 @@ argsParser.addArgument(
     {help: 'Change to directory DIR.', optionStrings: 'DIR'});
 
 argsParser.addArgument(
-    'file', {nargs: '?', help: 'Report to be uploaded (default: stdin)'});
-
-argsParser.addArgument(
     ['-u', '--url'],
     {nargs: '1', help: 'URL where report will upload to.', required: true});
 
@@ -54,7 +51,6 @@ const excludes = args.exclude.map(e => {
 });
 
 const parser = args.report;
-const input = args.file ? fs.createReadStream(args.file) : process.stdin;
 const shouldExclude = file => {
   // skip files outside project
   if (!path.resolve(file).startsWith(process.cwd())) return false;
@@ -67,13 +63,13 @@ const shouldExclude = file => {
 };
 const url = args.url[0];
 
-cli({parser, input, shouldExclude, url})
+cli({parser, shouldExclude, url})
     .then(location => {
       console.error(`coverage sent successfully to 💚`);
       console.error(`you can access the report at ${location}`);
     })
     .catch(err => {
-      console.error('Cannot upload report 😓')
+      console.error('Cannot upload report 😅')
       console.error(err.message);
       process.exit(1);
     });

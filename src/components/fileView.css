@@ -2,10 +2,11 @@
   --line-padding: 2px .5em;
   --missing-dark: #330c1c;
   --missing-medium: #98535f;
-  --missing-light: #ec1372;
+  --missing-light: #ec134c;
   --ok-dark: #022900;
   --ok-medium: #426742;
-  --ok-light: #8BC34A;
+  --ok-light: #5dc55c;
+  --par-light: #ec7b13;
   --ph-color: #2f316c;
   --num-min-width: 6ex;
   --line-hit-min-width: 3em;
@@ -36,15 +37,14 @@ code {
 .hit-bg {
   border-radius: 1em;
   display: inline-block;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding: 0 .5em;
   min-width: 2em;
   text-align: center;
 }
 
 .hit {
   font-family: 'Spartan', sans-serif;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 7pt;
   display: inline-block;
 }
@@ -67,43 +67,19 @@ code {
   border-bottom: 1pt solid;
 } */
 
-.mis {
-  background: var(--missing-dark);
-}
-
-.mis.lnum {
-  color: var(--missing-medium);
-}
-
 .mis .hit-bg {
   background: var(--missing-light);
   color: var(--missing-dark);
 }
 
-.par {
-  background: #102546;
-}
-
-.par.lnum {
-  color: #596a86;
-}
-
 .par .hit-bg {
-  background: #3b7ce2;
+  background: var(--par-light);
   color: #071223;
 }
 
-.ok {
-  background: #022900;
-}
-
-.ok.lnum {
-  color: #426742;
-}
-
 .ok .hit-bg {
-  background: #8BC34A;
-  color: #022900;
+  background: var(--ok-light);
+  color: var(--ok-dark);
 }
 
 .d {
@@ -244,6 +220,8 @@ code {
   left: calc(var(--line-hit-min-width) + var(--num-min-width));
   right: 0;
   overflow: hidden;
+  border-top-right-radius: 5pt;
+  border-bottom-right-radius: 5pt;
 }
 
 .ph-anim::before {
@@ -253,7 +231,7 @@ code {
   bottom: 0;
   left: -100%;
   right: 0;
-  background: linear-gradient(to right, rgba(10, 11, 33, .35) 48%, rgba(10, 11, 33, 0) 50%, rgba(10, 11, 33, .35) 52%) 50% 50%;;
+  background: linear-gradient(to right, rgba(10, 11, 33, .35) 48%, rgba(10, 11, 33, 0) 50%, rgba(10, 11, 33, .35) 52%) 50% 50%;
   animation: phAnimation 1.2s linear infinite;
 }
 
@@ -265,3 +243,39 @@ code {
 }
 
 .id { width: calc(4 * var(--ph-width)) }
+
+.par > .count {
+  margin-left: 3em;
+  color: #56587b;
+}
+
+.par > .count:before {
+  content: '● ';
+  color: var(--par-light);
+}
+
+.par > .count:after {
+  content: attr(data-bex) ' out of ' attr(data-bct) ' branches';
+}
+
+.file-cov {
+  font-weight: 600;
+}
+
+.file-cov:before {
+  content: ' — ';
+  color: #b3b3b3;
+  font-weight: normal;
+}
+
+.file-cov.low {
+  color: var(--missing-light);
+}
+
+.file-cov.high {
+  color: #3ca03b;
+}
+
+.file-cov.medium {
+  color: #ea611d;
+}

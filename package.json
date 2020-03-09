@@ -65,6 +65,7 @@
     "openbadge": "^1.0.4",
     "pg": "^7.18.1",
     "pg-native": "^3.0.0",
+    "recharts": "^2.0.0-beta.1",
     "serve-static": "^1.13.1",
     "update-notifier": "^3.0.0",
     "xml2js": "^0.4.23"

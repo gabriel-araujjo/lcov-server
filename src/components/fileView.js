@@ -73,7 +73,7 @@ function *phLines() {
 export function FileView ({tokenizedFile, lineCoverage}) {
   function* lines() {
     for (const l of tokenizedFile) {
-      yield [...renderLineOfCode(l), '\n'];
+      yield renderLineOfCode(l);
     }
   }
   const rendered = [...renderLines(lines(), lineCoverage)];
@@ -137,7 +137,6 @@ function* renderLines(lines, cov) {
   while (true) {
     const line = itLines.next();
     let [hit, bct, bex, coverageStatus=''] = itCoverage.next().value;
-    // TODO: use bct and bex to create a badge [2 of 8 branches]
     if (line.done) break;
     let hits = '';
     if (coverageStatus) {
@@ -146,7 +145,15 @@ function* renderLines(lines, cov) {
     }
     yield <span className={`lnum${coverageStatus}`} data-line-number={lnum+1}/>;
     yield <span className={`line-hit${coverageStatus}`}>{hits}</span>;
-    yield <span className={`lcode${coverageStatus}`}>{line.value}</span>;
+    yield <span className={`lcode${coverageStatus}`}>
+      {line.value}
+      {
+        bct != bex 
+        ? <span className='count' data-bct={bct} data-bex={bex} />
+        : []
+      }
+      {'\n'}
+    </span>;
     ++lnum;
   }
 }

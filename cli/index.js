@@ -43,10 +43,10 @@ function upload(url, data) {
   });
 }
 
-module.exports = async function cli({parser, input, url, shouldExclude}) {
+module.exports = async function cli({parser, url, shouldExclude}) {
   const gitInfo = git.parse('.');
   const ciInfo = ci();
-  const coverage = await parsers[parser].parse(input, shouldExclude);
+  const coverage = await parsers[parser].parse(shouldExclude);
 
   logCoverage(coverage);
   return await upload(url, [...gitInfo, ...ciInfo, coverage]);

@@ -14,8 +14,8 @@ export default (
   <BrowserRouter>
     <Layout>
       <Switch>
-        <Route path="/:rep([a-z0-9\-_./]+)/-/tree/:com([a-f0-9]{40})?/:dir([a-z0-9\-_./]+)?" component={Dummy} />
-        <Route path="/:rep([a-z0-9\-_\.\/]+)/-/blob/:com([a-f0-9]{40})?/:file([a-z0-9\-_\.\/]+)?" component={File} />
+        <Route path="/:rep([a-z0-9\-_./]+)/-/tree/:com([^/]+)/:dir([a-z0-9\-_./]+)?" component={Dummy} />
+        <Route path="/:rep([a-z0-9\-_\.\/]+)/-/blob/:com([^/]+)/:file([a-z0-9\-_\.\/]+)?" component={File} />
         {/* <Route path="/:dir/:name/blob/:com/*" component={Dummy} />
         <Route path="/:dir/:name" component={Dummy} />
         <Route path="/coverage/:source/:owner/:name/:file" component={File} />
