@@ -20,8 +20,8 @@ export async function getProjectIdAndLastCommit(rep) {
   return [id.substr(id.lastIndexOf('/') + 1), sha];
 }
 
-async function getProjectTree(id, com, path) {
-  let url = `${base}/v4/projects/${id}/repository/tree`;
+export async function getProjectTree(id, com, path) {
+  let url = `${base}/v4/projects/${encodeURIComponent(id)}/repository/tree`;
   let query = {};
   if (com) query.ref = com;
   if (path) query.path = path;

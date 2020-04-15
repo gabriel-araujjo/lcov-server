@@ -44,7 +44,7 @@ pre {
   line-height: 1.42857143;
   word-break: break-all;
   color: #fff;
-  border-radius: 5pt;
+  border-radius: 15pt;
   overflow: hidden;
   border: 1px solid #0a0b21;
 }
@@ -73,3 +73,21 @@ h1, h2, h3 {
 header {
   padding-top: 1em;
 }
+
+.p-cov-NaN { fill: #a1adb7; }
+.p-cov-0 { fill: #ec134c; }
+.p-cov-10 { fill: #ec2244; }
+.p-cov-20 { fill: #ec313c; }
+.p-cov-30 { fill: #ec3f34; }
+.p-cov-40 { fill: #ec4e2b; }
+.p-cov-50 { fill: #ec5d23; }
+.p-cov-60 { fill: #ec6c1b; }
+.p-cov-70 { fill: #ec7b13; }
+.p-cov-80 { fill: #bb942c; }
+.p-cov-90 { fill: #8dac44; }
+.p-cov-100 { fill: #5dc55c; }
+.white-stroke {
+  stroke: white;
+  stroke-width: 2;
+}
+

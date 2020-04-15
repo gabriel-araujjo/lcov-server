@@ -6,6 +6,17 @@ export function urlQuery(query) {
       .join('&');
 }
 
+export function calcCoveragePair(lines) {
+  const fileBranchCount = lines.map(i => i[2]).reduce((a,b) => a + b, 0);
+  const fileBranchHits = lines.map(i => i[3]).reduce((a,b) => a + b, 0);
+  return [fileBranchCount, fileBranchHits];
+}
+
+export function calcCoveragePercent(lines) {
+  const [count, hits] = calcCoveragePair(lines);
+  return hits / count * 100;
+}
+
 export function parseCoverage(history, branch) {
   // if no branch don't worry about parsing for a particular one
 

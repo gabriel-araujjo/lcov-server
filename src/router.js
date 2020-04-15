@@ -2,6 +2,7 @@ import React from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 
 import File from './coverage/file'
+import Tree from './coverage/tree'
 import Error from './components/error';
 import Layout from './layout';
 
@@ -14,7 +15,7 @@ export default (
   <BrowserRouter>
     <Layout>
       <Switch>
-        <Route path="/:rep([a-z0-9\-_./]+)/-/tree/:com([^/]+)/:dir([a-z0-9\-_./]+)?" component={Dummy} />
+        <Route path="/:rep([a-z0-9\-_./]+)/-/tree/:com([^/]+)/:dir([a-z0-9\-_./]+)?" component={Tree} />
         <Route path="/:rep([a-z0-9\-_\.\/]+)/-/blob/:com([^/]+)/:file([a-z0-9\-_\.\/]+)?" component={File} />
         {/* <Route path="/:dir/:name/blob/:com/*" component={Dummy} />
         <Route path="/:dir/:name" component={Dummy} />

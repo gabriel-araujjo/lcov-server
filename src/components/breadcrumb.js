@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function Breadcrumb({file, directory, rep, com}) {
   const isFile = typeof file != 'undefined';
-  const parts = (file || directory).split('/');
+  const parts = (file || directory || '').split('/');
   let path = '';
   const link = (part, index) => {
     if (index) path += '/';
