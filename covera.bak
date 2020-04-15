@@ -1,0 +1,461 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.2
+-- Dumped by pg_dump version 12.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: citype; Type: TYPE; Schema: public; Owner: covera
+--
+
+CREATE TYPE public.citype AS ENUM (
+    'travis-ci',
+    'drone',
+    'jenkins',
+    'circleci',
+    'codeship',
+    'wercker',
+    'gitlab-ci',
+    'appveyor',
+    'surf'
+);
+
+
+ALTER TYPE public.citype OWNER TO covera;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: file; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.file (
+    gid bigint NOT NULL,
+    pid bigint,
+    pat text NOT NULL
+);
+
+
+ALTER TABLE public.file OWNER TO covera;
+
+--
+-- Name: func_cov; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.func_cov (
+    fid bigint NOT NULL,
+    rid bigint NOT NULL,
+    sln smallint,
+    eln smallint,
+    fna text NOT NULL,
+    hit integer NOT NULL,
+    bct smallint,
+    bex smallint
+);
+
+
+ALTER TABLE public.func_cov OWNER TO covera;
+
+--
+-- Name: line_cov; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.line_cov (
+    fid bigint NOT NULL,
+    rid bigint NOT NULL,
+    lno smallint NOT NULL,
+    hit smallint NOT NULL,
+    bct smallint,
+    bex smallint
+);
+
+
+ALTER TABLE public.line_cov OWNER TO covera;
+
+--
+-- Name: migration_ctrl; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.migration_ctrl (
+    id smallint NOT NULL,
+    v integer
+);
+
+
+ALTER TABLE public.migration_ctrl OWNER TO covera;
+
+--
+-- Name: project; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.project (
+    gid bigint NOT NULL,
+    rep text NOT NULL
+);
+
+
+ALTER TABLE public.project OWNER TO covera;
+
+--
+-- Name: report; Type: TABLE; Schema: public; Owner: covera
+--
+
+CREATE TABLE public.report (
+    gid bigint NOT NULL,
+    pid bigint NOT NULL,
+    com character(40) NOT NULL,
+    bra text NOT NULL,
+    rat timestamp without time zone NOT NULL,
+    ci public.citype,
+    job text,
+    prq text,
+    bct bigint NOT NULL,
+    bex bigint NOT NULL
+);
+
+
+ALTER TABLE public.report OWNER TO covera;
+
+--
+-- Data for Name: file; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.file (gid, pid, pat) FROM stdin;
+1948402487	1130822612	main.cc
+1187163942	1130822612	print.cc
+1077064397	1130822612	print/print.cc
+\.
+
+
+--
+-- Data for Name: func_cov; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.func_cov (fid, rid, sln, eln, fna, hit, bct, bex) FROM stdin;
+1948402487	1090972268	12	30	say_hello(Mood, int)	0	18	0
+1948402487	1090972268	32	40	main	1	8	8
+1948402487	1324463119	12	30	say_hello(Mood, int)	0	18	0
+1948402487	1324463119	32	40	main	1	8	8
+1948402487	299570093	12	30	say_hello(Mood, int)	0	18	0
+1948402487	299570093	32	40	main	1	8	8
+1187163942	2070030976	2	7	print(int)	6	6	5
+1948402487	2070030976	12	30	say_hello(Mood, int)	0	18	0
+1948402487	2070030976	32	40	main	1	8	8
+1077064397	1552355191	2	7	print(int)	6	6	5
+1948402487	1552355191	12	30	say_hello(Mood, int)	0	18	0
+1948402487	1552355191	32	40	main	1	8	8
+\.
+
+
+--
+-- Data for Name: line_cov; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.line_cov (fid, rid, lno, hit, bct, bex) FROM stdin;
+1948402487	1090972268	12	0	1	0
+1948402487	1090972268	13	0	8	0
+1948402487	1090972268	14	0	1	0
+1948402487	1090972268	16	0	4	0
+1948402487	1090972268	17	0	1	0
+1948402487	1090972268	18	0	1	0
+1948402487	1090972268	19	0	1	0
+1948402487	1090972268	20	0	1	0
+1948402487	1090972268	21	0	1	0
+1948402487	1090972268	22	0	1	0
+1948402487	1090972268	23	0	1	0
+1948402487	1090972268	24	0	1	0
+1948402487	1090972268	25	0	1	0
+1948402487	1090972268	26	0	1	0
+1948402487	1090972268	27	0	1	0
+1948402487	1090972268	28	0	1	0
+1948402487	1090972268	30	0	1	0
+1948402487	1090972268	32	1	1	1
+1948402487	1090972268	33	1	1	1
+1948402487	1090972268	34	1	1	1
+1948402487	1090972268	35	1	1	1
+1948402487	1090972268	36	1	1	1
+1948402487	1090972268	37	1	1	1
+1948402487	1090972268	38	1	1	1
+1948402487	1090972268	39	1	1	1
+1948402487	1324463119	12	0	1	0
+1948402487	1324463119	13	0	8	0
+1948402487	1324463119	14	0	1	0
+1948402487	1324463119	16	0	4	0
+1948402487	1324463119	17	0	1	0
+1948402487	1324463119	18	0	1	0
+1948402487	1324463119	19	0	1	0
+1948402487	1324463119	20	0	1	0
+1948402487	1324463119	21	0	1	0
+1948402487	1324463119	22	0	1	0
+1948402487	1324463119	23	0	1	0
+1948402487	1324463119	24	0	1	0
+1948402487	1324463119	25	0	1	0
+1948402487	1324463119	26	0	1	0
+1948402487	1324463119	27	0	1	0
+1948402487	1324463119	28	0	1	0
+1948402487	1324463119	30	0	1	0
+1948402487	1324463119	32	1	1	1
+1948402487	1324463119	33	1	1	1
+1948402487	1324463119	34	1	1	1
+1948402487	1324463119	35	1	1	1
+1948402487	1324463119	36	1	1	1
+1948402487	1324463119	37	1	1	1
+1948402487	1324463119	38	1	1	1
+1948402487	1324463119	39	1	1	1
+1948402487	299570093	12	0	1	0
+1948402487	299570093	13	0	8	0
+1948402487	299570093	14	0	1	0
+1948402487	299570093	16	0	4	0
+1948402487	299570093	17	0	1	0
+1948402487	299570093	18	0	1	0
+1948402487	299570093	19	0	1	0
+1948402487	299570093	20	0	1	0
+1948402487	299570093	21	0	1	0
+1948402487	299570093	22	0	1	0
+1948402487	299570093	23	0	1	0
+1948402487	299570093	24	0	1	0
+1948402487	299570093	25	0	1	0
+1948402487	299570093	26	0	1	0
+1948402487	299570093	27	0	1	0
+1948402487	299570093	28	0	1	0
+1948402487	299570093	30	0	1	0
+1948402487	299570093	32	1	1	1
+1948402487	299570093	33	1	1	1
+1948402487	299570093	34	1	1	1
+1948402487	299570093	35	1	1	1
+1948402487	299570093	36	1	1	1
+1948402487	299570093	37	1	1	1
+1948402487	299570093	38	1	1	1
+1948402487	299570093	39	1	1	1
+1187163942	2070030976	2	6	1	1
+1187163942	2070030976	3	6	2	6
+1187163942	2070030976	4	0	1	0
+1187163942	2070030976	5	6	1	1
+1187163942	2070030976	6	6	1	1
+1948402487	2070030976	12	0	1	0
+1948402487	2070030976	13	0	8	0
+1948402487	2070030976	14	0	1	0
+1948402487	2070030976	16	0	4	0
+1948402487	2070030976	17	0	1	0
+1948402487	2070030976	18	0	1	0
+1948402487	2070030976	19	0	1	0
+1948402487	2070030976	20	0	1	0
+1948402487	2070030976	21	0	1	0
+1948402487	2070030976	22	0	1	0
+1948402487	2070030976	23	0	1	0
+1948402487	2070030976	24	0	1	0
+1948402487	2070030976	25	0	1	0
+1948402487	2070030976	26	0	1	0
+1948402487	2070030976	27	0	1	0
+1948402487	2070030976	28	0	1	0
+1948402487	2070030976	30	0	1	0
+1948402487	2070030976	32	1	1	1
+1948402487	2070030976	33	1	1	1
+1948402487	2070030976	34	1	1	1
+1948402487	2070030976	35	1	1	1
+1948402487	2070030976	36	1	1	1
+1948402487	2070030976	37	1	1	1
+1948402487	2070030976	38	1	1	1
+1948402487	2070030976	39	1	1	1
+1077064397	1552355191	2	6	1	1
+1077064397	1552355191	3	6	2	1
+1077064397	1552355191	4	0	1	0
+1077064397	1552355191	5	6	1	1
+1077064397	1552355191	6	6	1	1
+1948402487	1552355191	12	0	1	0
+1948402487	1552355191	13	0	8	0
+1948402487	1552355191	14	0	1	0
+1948402487	1552355191	16	0	4	0
+1948402487	1552355191	17	0	1	0
+1948402487	1552355191	18	0	1	0
+1948402487	1552355191	19	0	1	0
+1948402487	1552355191	20	0	1	0
+1948402487	1552355191	21	0	1	0
+1948402487	1552355191	22	0	1	0
+1948402487	1552355191	23	0	1	0
+1948402487	1552355191	24	0	1	0
+1948402487	1552355191	25	0	1	0
+1948402487	1552355191	26	0	1	0
+1948402487	1552355191	27	0	1	0
+1948402487	1552355191	28	0	1	0
+1948402487	1552355191	30	0	1	0
+1948402487	1552355191	32	1	1	1
+1948402487	1552355191	33	1	1	1
+1948402487	1552355191	34	1	1	1
+1948402487	1552355191	35	1	1	1
+1948402487	1552355191	36	1	1	1
+1948402487	1552355191	37	1	1	1
+1948402487	1552355191	38	1	1	1
+1948402487	1552355191	39	1	1	1
+\.
+
+
+--
+-- Data for Name: migration_ctrl; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.migration_ctrl (id, v) FROM stdin;
+1	2
+\.
+
+
+--
+-- Data for Name: project; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.project (gid, rep) FROM stdin;
+1130822612	gabriel-araujo/coverage-example-c
+\.
+
+
+--
+-- Data for Name: report; Type: TABLE DATA; Schema: public; Owner: covera
+--
+
+COPY public.report (gid, pid, com, bra, rat, ci, job, prq, bct, bex) FROM stdin;
+1324463119	1130822612	357549df4b30ee3d69f19b2ee583bd52c51d6368	master	2020-02-07 22:13:17.68	\N	\N	\N	35	8
+1090972268	1130822612	9d142243d7b6f85cf0967a316c84f218fe0e47fa	master	2020-02-06 00:53:41.924	\N	\N	\N	35	8
+299570093	1130822612	170c4e3b6b7c87a7deaa8f77440120407b8b294f	master	2020-02-07 22:20:34.612	\N	\N	\N	35	8
+2070030976	1130822612	c70deb5d452d2405ae7cb4cca0209d7dd2ec043a	other_branch	2020-03-07 00:45:04.748	\N	\N	\N	41	17
+1552355191	1130822612	347b4c21097103ecf74f795b3629724d791350df	complex-branch	2020-03-08 16:49:08.823	\N	\N	\N	41	12
+\.
+
+
+--
+-- Name: file file_pkey; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT file_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: line_cov line_cov_pkey; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.line_cov
+    ADD CONSTRAINT line_cov_pkey PRIMARY KEY (fid, rid, lno);
+
+
+--
+-- Name: migration_ctrl migration_ctrl_pkey; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.migration_ctrl
+    ADD CONSTRAINT migration_ctrl_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: project project_pkey; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.project
+    ADD CONSTRAINT project_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: project project_rep_key; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.project
+    ADD CONSTRAINT project_rep_key UNIQUE (rep);
+
+
+--
+-- Name: report report_pkey; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.report
+    ADD CONSTRAINT report_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: report uinique_commit; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.report
+    ADD CONSTRAINT uinique_commit UNIQUE (pid, com);
+
+
+--
+-- Name: func_cov unique_fn; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.func_cov
+    ADD CONSTRAINT unique_fn UNIQUE (fid, rid, sln, fna);
+
+
+--
+-- Name: file unique_path; Type: CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT unique_path UNIQUE (pid, pat);
+
+
+--
+-- Name: file file_pid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT file_pid_fkey FOREIGN KEY (pid) REFERENCES public.project(gid) ON DELETE CASCADE;
+
+
+--
+-- Name: func_cov func_cov_fid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.func_cov
+    ADD CONSTRAINT func_cov_fid_fkey FOREIGN KEY (fid) REFERENCES public.file(gid) ON DELETE CASCADE;
+
+
+--
+-- Name: func_cov func_cov_rid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.func_cov
+    ADD CONSTRAINT func_cov_rid_fkey FOREIGN KEY (rid) REFERENCES public.report(gid) ON DELETE CASCADE;
+
+
+--
+-- Name: line_cov line_cov_fid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.line_cov
+    ADD CONSTRAINT line_cov_fid_fkey FOREIGN KEY (fid) REFERENCES public.file(gid) ON DELETE CASCADE;
+
+
+--
+-- Name: line_cov line_cov_rid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.line_cov
+    ADD CONSTRAINT line_cov_rid_fkey FOREIGN KEY (rid) REFERENCES public.report(gid) ON DELETE CASCADE;
+
+
+--
+-- Name: report report_pid_fkey; Type: FK CONSTRAINT; Schema: public; Owner: covera
+--
+
+ALTER TABLE ONLY public.report
+    ADD CONSTRAINT report_pid_fkey FOREIGN KEY (pid) REFERENCES public.project(gid) ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
