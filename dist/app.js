@@ -41210,15 +41210,17 @@ class noCoverage extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component 
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
-/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react */ "./node_modules/react/index.js");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_1__);
 
 
 
-function* intoArray(tree) {
+
+function* intoArray(tree, parent) {
   for (const v of tree.values()) {
-    v[3] = [...intoArray(v[3])];
+    v[3] = [...intoArray(v[3], v)];
+    v[4] = parent;
     yield v;
   }
 }
@@ -41227,6 +41229,7 @@ function* intoArray(tree) {
 
 function makeTree(files) {
   const tree = new Map();
+  const root = [null, 0, 0,, 0];
 
   for (const [name, total, hits] of files) {
     let entry = tree;
@@ -41243,51 +41246,144 @@ function makeTree(files) {
     }
   }
 
-  return [...intoArray(tree)];
+  root[3] = [...intoArray(tree, root)];
+  return root;
 }
 
-class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
+class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Component {
   constructor(props) {
     super(props);
-    this.chartRef = react__WEBPACK_IMPORTED_MODULE_0___default.a.createRef();
+    this.chartRef = react__WEBPACK_IMPORTED_MODULE_1___default.a.createRef();
     this.tree = makeTree(this.props.report);
   }
 
   componentDidMount() {
-    let svg = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this.chartRef.current).append('svg').attr('width', 500).attr('height', 500).append('g').attr('transform', 'translate(250, 250)');
+    const svg = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.chartRef.current).append('svg').attr('width', 500).attr('height', 500).append('g').attr('transform', 'translate(250, 250)');
+    const duration = 600;
+    /* ms */
 
-    const coverageClass = level => d => {
+    let tree = this.tree;
+
+    const children = node => node[3];
+
+    const parent = node => node[4];
+
+    const coverageClass = (level, index) => d => {
       let percent = Math.floor(d.data[2] / d.data[1] * 10) * 10;
       if (level >= 3) percent = 'NaN';
-      return `white-stroke p-cov-${percent} lev-${level}`;
+      return `white-stroke p-cov-${percent} lev-${level} g-${index.join('-')}`;
     };
 
-    const pie = d3__WEBPACK_IMPORTED_MODULE_1__["pie"]().value(d => d[1]);
+    const pie = (innerRadius, outerRadius, startAngle, endAngle) => data => {
+      const pie = d3__WEBPACK_IMPORTED_MODULE_0__["pie"]().sort(null).value(d => d[1])(data);
+      const ratio = (endAngle - startAngle) / 2 / Math.PI;
 
-    function drawGraph(data, level = 1, startAngle = 0, endAngle = 2 * Math.PI, innerRadius = 40, outerRadius = innerRadius + 50) {
-      if (level >= 3 && data.length) {
-        data = [['', 1, 1, []]];
+      for (const d of pie) {
+        d.startAngle = d.startAngle * ratio + startAngle;
+        d.endAngle = d.endAngle * ratio + startAngle;
+        d.innerRadius = innerRadius;
+        d.outerRadius = outerRadius;
+      }
+
+      return pie;
+    };
+
+    function removeOthers(tree, keep, index = [0]) {
+      const group = `.g-${index.join('-')}`;
+      if (group == keep) return;
+      const data = children(tree);
+      svg.selectAll(group).data(data).remove();
+
+      for (const [i, child] of data.entries()) {
+        removeOthers(child, keep, [...index, i]);
+      }
+    }
+
+    function drawGraph(data, level = 1, index = [0], startAngle = 0, endAngle = 2 * Math.PI, innerRadius = 40, outerRadius = innerRadius + 50, delay = 0, parentEntering = false) {
+      const lastLevel = level >= 3 && data.length;
+
+      if (lastLevel) {
         innerRadius += 5;
         outerRadius = innerRadius + 5;
       }
 
-      const dataReady = pie(data);
-      const ratio = (endAngle - startAngle) / 2 / Math.PI;
-      const arcPath = d3__WEBPACK_IMPORTED_MODULE_1__["arc"]().startAngle(d => d.startAngle * ratio + startAngle).endAngle(d => d.endAngle * ratio + startAngle).innerRadius(innerRadius).outerRadius(outerRadius);
-      svg.selectAll(`whatever`).data(dataReady).enter().append('path').attr('d', arcPath).attr('class', coverageClass(level));
+      const dataReady = pie(innerRadius, outerRadius, startAngle, endAngle)(data);
+      const enteringArcPath = d3__WEBPACK_IMPORTED_MODULE_0__["arc"]().innerRadius(innerRadius).outerRadius(innerRadius + 1);
+      let arcs = svg.selectAll(`.g-${index.join('-')}`);
+      const entering = !arcs.size();
+
+      if (entering) {
+        arcs = arcs.data(dataReady);
+      }
+
+      console.log(`.g-${index.join('-')} (size ${arcs.size()})`);
+
+      const arcTween = (d, i) => {
+        const iInnerRadius = Object(d3__WEBPACK_IMPORTED_MODULE_0__["interpolate"])(d.innerRadius, innerRadius);
+        const iOuterRadius = Object(d3__WEBPACK_IMPORTED_MODULE_0__["interpolate"])(d.outerRadius, outerRadius);
+        const iStartAngle = Object(d3__WEBPACK_IMPORTED_MODULE_0__["interpolate"])(d.startAngle, dataReady[i].startAngle);
+        const iEndAngle = Object(d3__WEBPACK_IMPORTED_MODULE_0__["interpolate"])(d.endAngle, dataReady[i].endAngle);
+        return t => {
+          d.innerRadius = iInnerRadius(t);
+          d.outerRadius = iOuterRadius(t);
+          d.startAngle = iStartAngle(t);
+          d.endAngle = iEndAngle(t);
+          return d3__WEBPACK_IMPORTED_MODULE_0__["arc"]()(d);
+        };
+      };
+
+      if (parentEntering || !parentEntering && entering) delay += duration / 3;
+      setTimeout(() => {
+        arcs.attr('class', coverageClass(level, index)).transition().duration(duration / 3).attrTween('d', arcTween);
+        arcs.enter().append('path').attr('class', coverageClass(level, index)).on('click', ({
+          data: node
+        }, nodeIndex, generation) => {
+          if (!children(node).length) return;
+          const newIndex = [...index, nodeIndex];
+          removeOthers(tree, `.g-${newIndex.join('-')}`);
+          tree = node;
+          drawGraph(children(tree), 1, newIndex);
+          drawCenter();
+        }).attr('d', enteringArcPath).transition().duration(duration / 3).attr('d', d3__WEBPACK_IMPORTED_MODULE_0__["arc"]());
+      }, delay);
+      if (lastLevel) return;
       const cInnerRadius = outerRadius;
       const cOuterRadius = outerRadius + (outerRadius - innerRadius) / 1.61803398875;
 
-      for (const d of dataReady) {
-        drawGraph(d.data[3], level + 1, d.startAngle * ratio + startAngle, d.endAngle * ratio + startAngle, cInnerRadius, cOuterRadius);
+      for (const [i, d] of dataReady.entries()) {
+        drawGraph(d.data[3], level + 1, [...index, i], d.startAngle, d.endAngle, cInnerRadius, cOuterRadius, delay, entering);
       }
     }
 
-    drawGraph(this.tree);
+    function drawCenter() {
+      const circle = (n, radio) => {
+        const step = Math.PI * 2 / (n + 1);
+        const points = [];
+        let cursor = 0;
+
+        for (; n; --n, cursor += step) {
+          points.push([-Math.sin(cursor) * radio, -Math.cos(cursor) * radio]);
+        }
+
+        return `M${points.join(' ')}Z`;
+      };
+
+      const drawPath = d => {
+        console.log(d);
+        return d ? "M0,-28.294 -3.536,-24.757 -7.073,-21.220 -10.61,-17.684 -14.147,-14.147 -17.684,-10.610 -21.22,-7.074 -24.757,-3.537 -28.294,0 -24.757,3.536 -21.22,7.073 -17.684,10.610 -14.147,14.147 -10.61,17.684 -7.073,21.220 -3.536,24.757 0,28.294 3.694,24.600 7.388,20.906 3.468,16.985 -.453,13.065 -4.373,9.144 -8.294,5.224 .853,5.224 10,5.224 19.147,5.224 28.294,5.224 28.294,0 28.294,-5.224 19.147,-5.224 10,-5.224 .853,-5.224 -8.294,-5.224 -4.373,-9.150 -.453,-13.065 3.467,-16.986 7.388,-20.906 3.694,-24.600Z" : circle(38, 25);
+      };
+
+      const path = svg.selectAll(`.back`).data([parent(tree)]);
+      path.transition().duration(duration).attr('d', drawPath);
+      path.enter().append('path').attr('class', 'back').attr('d', drawPath);
+    }
+
+    drawGraph(children(tree));
+    drawCenter();
   }
 
   render() {
-    return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    return react__WEBPACK_IMPORTED_MODULE_1___default.a.createElement("div", {
       className: "cov-chart",
       ref: this.chartRef
     });
@@ -41471,7 +41567,7 @@ class Tree extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       com,
       dir
     } = this.props.match.params;
-    const fakeTree = [['print/print.cc', 50, 20], ['print/special_print.cc', 50, 45], ['util/string.cc', 500, 500], ['util/http.cc', 200, 120], ['exec/main.cc', 100, 0], ['src/crypto/rsa.cc', 100, 70], ['src/crypto/detail/base64.cc', 30, 20]];
+    const fakeTree = [['print/print.cc', 50, 20], ['print/special_print.cc', 50, 45], ['util/string.cc', 500, 500], ['util/http.cc', 200, 120], ['exec/main.cc', 100, 0], ['src/crypto/rsa.cc', 100, 0], ['src/rsa2.cc', 200, 190], ['src/crypto/detail/base64.cc', 100, 100]];
     let content = loading ? 'Loading...' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_sunburst__WEBPACK_IMPORTED_MODULE_2__["default"], {
       report: fakeTree
     });

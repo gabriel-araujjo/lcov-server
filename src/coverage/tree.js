@@ -38,8 +38,9 @@ class Tree extends React.Component {
       ['util/string.cc', 500, 500],
       ['util/http.cc', 200, 120],
       ['exec/main.cc', 100, 0],
-      ['src/crypto/rsa.cc', 100, 70],
-      ['src/crypto/detail/base64.cc', 30, 20]
+      ['src/crypto/rsa.cc', 100, 0],
+      ['src/rsa2.cc', 200, 190],
+      ['src/crypto/detail/base64.cc', 100, 100]
     ];
 
     let content = loading ? 'Loading...' : (<SunburstChart report={fakeTree} />);
