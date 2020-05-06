@@ -41290,6 +41290,7 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
 
     function removeOthers(tree, keep, index = [0]) {
       const group = `.g-${index.join('-')}`;
+      console.log('Removing ' + group);
       if (group == keep) return;
       const data = children(tree);
       svg.selectAll(group).data(data).remove();
@@ -41299,7 +41300,7 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
       }
     }
 
-    function drawGraph(data, level = 1, index = [0], startAngle = 0, endAngle = 2 * Math.PI, innerRadius = 40, outerRadius = innerRadius + 50, delay = 0, parentEntering = false) {
+    function drawGraph(data, level = 1, index = [0], startAngle = 0, endAngle = 2 * Math.PI, innerRadius = 40, outerRadius = innerRadius + 50, delay = 0, parentEntering = false, reverseEntering = false) {
       const lastLevel = level >= 3 && data.length;
 
       if (lastLevel) {
@@ -41308,7 +41309,7 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
       }
 
       const dataReady = pie(innerRadius, outerRadius, startAngle, endAngle)(data);
-      const enteringArcPath = d3__WEBPACK_IMPORTED_MODULE_0__["arc"]().innerRadius(innerRadius).outerRadius(innerRadius + 1);
+      const enteringArcPath = reverseEntering ? d3__WEBPACK_IMPORTED_MODULE_0__["arc"]().innerRadius(outerRadius - 1).outerRadius(outerRadius) : d3__WEBPACK_IMPORTED_MODULE_0__["arc"]().innerRadius(innerRadius).outerRadius(innerRadius + 1);
       let arcs = svg.selectAll(`.g-${index.join('-')}`);
       const entering = !arcs.size();
 
@@ -41340,10 +41341,10 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
         }, nodeIndex, generation) => {
           if (!children(node).length) return;
           const newIndex = [...index, nodeIndex];
-          removeOthers(tree, `.g-${newIndex.join('-')}`);
+          removeOthers(tree, `.g-${newIndex.join('-')}`, _index);
           tree = node;
           drawGraph(children(tree), 1, newIndex);
-          drawCenter();
+          drawCenter(newIndex);
         }).attr('d', enteringArcPath).transition().duration(duration / 3).attr('d', d3__WEBPACK_IMPORTED_MODULE_0__["arc"]());
       }, delay);
       if (lastLevel) return;
@@ -41355,7 +41356,45 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
       }
     }
 
-    function drawCenter() {
+    let _index;
+
+    const centerButton = svg.append('g').attr('class', 'center-btn');
+    centerButton.append('circle').attr('r', 40).style('fill', 'transparent');
+    centerButton.on('click', () => {
+      if (!parent(tree)) return;
+
+      const newIndex = _index.slice(0, _index.length - 1);
+
+      svg.selectAll('.p-cov-NaN').remove();
+      const p = parent(tree);
+      let offset = 0;
+      let total = 0;
+      let found = false;
+
+      for (const node of children(p)) {
+        total += node[1];
+        if (node == tree) found = true;
+        if (!found) offset = total;
+      }
+
+      const startAngle = offset * 2 * Math.PI / total;
+      const endAngle = (offset + tree[1]) * 2 * Math.PI / total; // data, level = 1, index = [0], startAngle = 0,
+      // endAngle = 2 * Math.PI, innerRadius = 40,
+      // outerRadius = innerRadius + 50,
+      // delay = 0,
+      // parentEntering = false
+      // reverseEntering = true
+
+      const cOuterRadius = 90 + (90 - 40) / 1.61803398875;
+      drawGraph(children(tree), 2, _index, startAngle, endAngle, 90, cOuterRadius);
+      tree = parent(tree);
+      drawGraph(children(tree), 1, newIndex, 0, 2 * Math.PI, 40, 90, duration / 6, false, true);
+      drawCenter(newIndex);
+    });
+
+    function drawCenter(index = [0]) {
+      _index = index;
+
       const circle = (n, radio) => {
         const step = Math.PI * 2 / (n + 1);
         const points = [];
@@ -41368,12 +41407,14 @@ class SunburstChart extends react__WEBPACK_IMPORTED_MODULE_1___default.a.Compone
         return `M${points.join(' ')}Z`;
       };
 
+      const width = 10;
+
       const drawPath = d => {
-        console.log(d);
-        return d ? "M0,-28.294 -3.536,-24.757 -7.073,-21.220 -10.61,-17.684 -14.147,-14.147 -17.684,-10.610 -21.22,-7.074 -24.757,-3.537 -28.294,0 -24.757,3.536 -21.22,7.073 -17.684,10.610 -14.147,14.147 -10.61,17.684 -7.073,21.220 -3.536,24.757 0,28.294 3.694,24.600 7.388,20.906 3.468,16.985 -.453,13.065 -4.373,9.144 -8.294,5.224 .853,5.224 10,5.224 19.147,5.224 28.294,5.224 28.294,0 28.294,-5.224 19.147,-5.224 10,-5.224 .853,-5.224 -8.294,-5.224 -4.373,-9.150 -.453,-13.065 3.467,-16.986 7.388,-20.906 3.694,-24.600Z" : circle(38, 25);
+        const arrow = [[0, -28.3], [-3.5, -24.8], [-7.1, -21.2], [-10.6, -17.7], [-14.1, -14.1], [-17.7, -10.6], [-21.2, -7.1], [-24.8, -3.5], [-28.3, 0], [-24.8, 3.5], [-21.2, 7.1], [-17.7, 10.6], [-14.1, 14.1], [-10.6, 17.7], [-7.1, 21.2], [-3.5, 24.8], [0, 28.3], [3.7, 24.6], [7.4, 20.9], [3.5, 17], [-.5, 13.1], [-4.4, 9.1], [-8.3, 5.2], [.9, 5.2], [10.0, 5.2], [19.1, 5.2], [28.3, 5.2], [28.3, 0], [28.3, -5.2], [19.1, -5.2], [10, -5.2], [.9, -5.2], [-8.3, -5.2], [-4.4, -9.2], [-.5, -13.1], [3.5, -17], [7.4, -20.9], [3.7, -24.6]].map(p => p.map(i => i * width / 25));
+        return parent(d) ? `M${arrow.join(' ')}Z` : circle(arrow.length, width);
       };
 
-      const path = svg.selectAll(`.back`).data([parent(tree)]);
+      const path = centerButton.selectAll(`.back`).data([tree]);
       path.transition().duration(duration).attr('d', drawPath);
       path.enter().append('path').attr('class', 'back').attr('d', drawPath);
     }
@@ -41567,7 +41608,7 @@ class Tree extends react__WEBPACK_IMPORTED_MODULE_0___default.a.Component {
       com,
       dir
     } = this.props.match.params;
-    const fakeTree = [['print/print.cc', 50, 20], ['print/special_print.cc', 50, 45], ['util/string.cc', 500, 500], ['util/http.cc', 200, 120], ['exec/main.cc', 100, 0], ['src/crypto/rsa.cc', 100, 0], ['src/rsa2.cc', 200, 190], ['src/crypto/detail/base64.cc', 100, 100]];
+    const fakeTree = [['print/print.cc', 50, 20], ['print/special_print.cc', 50, 45], ['util/string.cc', 500, 500], ['util/http.cc', 200, 120], ['exec/main.cc', 100, 0], ['src/crypto/rsa.cc', 100, 0], ['src/crypto/detail/base64.cc', 100, 100], ['src/crypto/detail/aes/main.cc', 100, 100], ['src/crypto/detail/aes/aes.cc', 100, 100], ['src/rsa2.cc', 200, 190]];
     let content = loading ? 'Loading...' : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(_components_sunburst__WEBPACK_IMPORTED_MODULE_2__["default"], {
       report: fakeTree
     });
